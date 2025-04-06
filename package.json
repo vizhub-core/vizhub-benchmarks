@@ -1,0 +1,25 @@
+{
+  "name": "vizhub-benchmarks",
+  "version": "0.0.1",
+  "description": "AI code editing benchmarks for interactive visuals",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vizhub-core/vizhub-benchmarks.git"
+  },
+  "keywords": [
+    "AI",
+    "benchmarks",
+    "dataviz",
+    "webdev"
+  ],
+  "author": "Curran Kelleher, EJ Fox",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vizhub-core/vizhub-benchmarks/issues"
+  },
+  "homepage": "https://github.com/vizhub-core/vizhub-benchmarks#readme"
+}
