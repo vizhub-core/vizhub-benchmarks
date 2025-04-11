@@ -1,23 +1,10 @@
 **functions.mjs**
 
 ```js
+// Implement the multiply function to return the product of two numbers
 export function multiply(a, b) {
   return a * b;
 }
 ```
 
-**index.mjs**
-
-```js
-import { multiply } from "./functions.mjs";
-
-const result = multiply(6, 7);
-if (result !== 42) {
-  console.error(`Test failed: expected 42, got ${result}`);
-  process.exit(1);
-}
-console.log("Multiply test passed");
-process.exit(0);
-```
-
-The only change needed is to implement the `multiply` function in `functions.mjs` to return the product of its two arguments. The `index.mjs` file remains unchanged as it already contains the correct unit test.
+The `index.mjs` file is correct and doesn't need to be changed. I've only updated `functions.mjs` to implement the `multiply` function that returns the product of its two parameters. This implementation will pass the unit test in `index.mjs` since 6 * 7 equals the expected result of 42.

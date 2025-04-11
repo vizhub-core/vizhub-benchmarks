@@ -7,19 +7,14 @@ import {
   ensureCacheDir,
   saveVisualizationOutput,
 } from "./fileUtils";
-import {
-  Challenge,
-  ChallengeResult,
-  TestRunResult,
-} from "./types";
+import { Challenge, ChallengeResult, TestRunResult } from "./types";
 import path from "path";
-import { spawnSync } from "child_process";
+import { spawnSync, exec } from "child_process";
 import puppeteer, { Browser, Page } from "puppeteer"; // Import Browser and Page
 import http from "http";
 import fs from "fs";
-import { exec } from "child_process";
 import { URL } from "url";
-import { performAiEdit } from "..";
+import { performAiEdit } from "editcodewithai";
 
 // --------------- BENCHMARK RUNNER ---------------
 
@@ -37,10 +32,7 @@ export async function runBenchmark(
   } = {}
 ): Promise<ChallengeResult[]> {
   const results: ChallengeResult[] = [];
-  const cacheDirBase = path.join(
-    process.cwd(),
-    "benchmarks/cache"
-  );
+  const cacheDirBase = path.join(process.cwd(), "benchmarks/cache");
 
   // Setup cache if enabled
   let cache;
@@ -51,17 +43,11 @@ export async function runBenchmark(
 
   for (const challenge of challenges) {
     for (const model of models) {
-      console.log(
-        `Running ${challenge.name} with ${model}...`
-      );
+      console.log(`Running ${challenge.name} with ${model}...`);
 
       try {
         // Create LLM function for this model
-        const llmFunction = createOpenRouterLlmFunction(
-          model,
-          apiKey,
-          cache
-        );
+        const llmFunction = createOpenRouterLlmFunction(model, apiKey, cache);
 
         // Ask AI to fill out the placeholder TODOs
         const aiResult = await performAiEdit({
@@ -87,18 +73,13 @@ export async function runBenchmark(
         );
 
         // For visualization challenges, save the output image
-        if (
-          challenge.type === "visualization" &&
-          testResult.outputImage
-        ) {
+        if (challenge.type === "visualization" && testResult.outputImage) {
           const imagePath = saveVisualizationOutput(
             challenge.name,
             model,
             testResult.outputImage
           );
-          console.log(
-            `Visualization saved to: ${imagePath}`
-          );
+          console.log(`Visualization saved to: ${imagePath}`);
         }
 
         const result: ChallengeResult = {
@@ -113,18 +94,12 @@ export async function runBenchmark(
 
         results.push(result);
       } catch (error) {
-        console.error(
-          `Error running ${challenge.name} with ${model}:`,
-          error
-        );
+        console.error(`Error running ${challenge.name} with ${model}:`, error);
         results.push({
           challenge: challenge.name,
           model,
           passFail: "error",
-          testOutput:
-            error instanceof Error
-              ? error.message
-              : String(error),
+          testOutput: error instanceof Error ? error.message : String(error),
           editOutput: "",
           duration: 0,
         });
@@ -167,9 +142,7 @@ function runCodeTest(challengeDir: string): TestRunResult {
 
   return {
     pass: child.status === 0,
-    output:
-      child.stdout +
-      (child.stderr ? `\nErrors:\n${child.stderr}` : ""),
+    output: child.stdout + (child.stderr ? `\nErrors:\n${child.stderr}` : ""),
   };
 }
 
@@ -187,10 +160,7 @@ async function runVisualizationTest(
       url.pathname === "/" ? "index.html" : url.pathname
     );
 
-    if (
-      fs.existsSync(filePath) &&
-      fs.statSync(filePath).isDirectory()
-    ) {
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
       filePath = path.join(filePath, "index.html");
     }
 
@@ -206,9 +176,7 @@ async function runVisualizationTest(
   });
 
   // Use a random available port
-  await new Promise<void>((resolve) =>
-    server.listen(0, resolve)
-  ); // Wait for server to listen
+  await new Promise<void>((resolve) => server.listen(0, resolve)); // Wait for server to listen
   const port = (server.address() as any).port;
   let browser: Browser | null = null; // Use imported Browser type
 
@@ -222,9 +190,7 @@ async function runVisualizationTest(
     await page.goto(`http://localhost:${port}/index.html`);
     await page.waitForSelector("#chart", { timeout: 5000 });
     // Replace waitForTimeout with standard setTimeout
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000)
-    ); // Give D3 time to animate
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Give D3 time to animate
 
     // Capture screenshot
     const screenshot = await page.screenshot({
@@ -239,10 +205,7 @@ async function runVisualizationTest(
       outputImage: screenshot as string,
     };
   } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : String(error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return {
       pass: false,
       output: errorMessage,
@@ -300,24 +263,14 @@ export function createGraderServer(): http.Server {
     }
 
     // Serve static files
-    let filePath = path.join(
-      process.cwd(),
-      "benchmarks",
-      url.pathname
-    );
+    let filePath = path.join(process.cwd(), "benchmarks", url.pathname);
 
     // Default to GradeResultPlayer.html
     if (pathname === "/") {
-      filePath = path.join(
-        process.cwd(),
-        "GradeResultPlayer.html"
-      );
+      filePath = path.join(process.cwd(), "GradeResultPlayer.html");
     }
 
-    if (
-      fs.existsSync(filePath) &&
-      fs.statSync(filePath).isDirectory()
-    ) {
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
       filePath = path.join(filePath, "index.html");
     }
 
@@ -345,14 +298,8 @@ function handleApiRequest(
 ) {
   // Enable CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type"
-  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   // Handle OPTIONS request for CORS preflight
   if (req.method === "OPTIONS") {
@@ -378,17 +325,14 @@ function handleApiRequest(
 
           req.on("end", () => {
             try {
-              const newResults = JSON.parse(
-                body
-              ) as ChallengeResult[];
+              const newResults = JSON.parse(body) as ChallengeResult[];
               if (!Array.isArray(newResults)) {
                 res.writeHead(400, {
                   "Content-Type": "application/json",
                 });
                 res.end(
                   JSON.stringify({
-                    error:
-                      "Expected an array of challenge results",
+                    error: "Expected an array of challenge results",
                   })
                 );
                 return;
@@ -440,18 +384,14 @@ function handleApiRequest(
           res.writeHead(405, {
             "Content-Type": "application/json",
           });
-          res.end(
-            JSON.stringify({ error: "Method not allowed" })
-          );
+          res.end(JSON.stringify({ error: "Method not allowed" }));
         }
         break;
 
       case "/api/challenges":
         if (req.method === "GET") {
           const results = readResultsFromCsv();
-          const challenges = [
-            ...new Set(results.map((r) => r.challenge)),
-          ];
+          const challenges = [...new Set(results.map((r) => r.challenge))];
           res.writeHead(200, {
             "Content-Type": "application/json",
           });
@@ -460,18 +400,14 @@ function handleApiRequest(
           res.writeHead(405, {
             "Content-Type": "application/json",
           });
-          res.end(
-            JSON.stringify({ error: "Method not allowed" })
-          );
+          res.end(JSON.stringify({ error: "Method not allowed" }));
         }
         break;
 
       case "/api/models":
         if (req.method === "GET") {
           const results = readResultsFromCsv();
-          const models = [
-            ...new Set(results.map((r) => r.model)),
-          ];
+          const models = [...new Set(results.map((r) => r.model))];
           res.writeHead(200, {
             "Content-Type": "application/json",
           });
@@ -480,9 +416,7 @@ function handleApiRequest(
           res.writeHead(405, {
             "Content-Type": "application/json",
           });
-          res.end(
-            JSON.stringify({ error: "Method not allowed" })
-          );
+          res.end(JSON.stringify({ error: "Method not allowed" }));
         }
         break;
 
@@ -490,18 +424,14 @@ function handleApiRequest(
         res.writeHead(404, {
           "Content-Type": "application/json",
         });
-        res.end(
-          JSON.stringify({ error: "Endpoint not found" })
-        );
+        res.end(JSON.stringify({ error: "Endpoint not found" }));
     }
   } catch (error) {
     console.error("API error:", error);
     res.writeHead(500, {
       "Content-Type": "application/json",
     });
-    res.end(
-      JSON.stringify({ error: "Internal server error" })
-    );
+    res.end(JSON.stringify({ error: "Internal server error" }));
   }
 }
 
@@ -515,16 +445,12 @@ export function startGraderUI(
   const server = createGraderServer();
 
   server.listen(port, () => {
-    console.log(
-      `Grader UI server running at http://localhost:${port}`
-    );
+    console.log(`Grader UI server running at http://localhost:${port}`);
 
     // Build URL with optional challenge parameter
     let graderUrl = `http://localhost:${port}/`;
     if (challenge) {
-      graderUrl += `?challenge=${encodeURIComponent(
-        challenge
-      )}`;
+      graderUrl += `?challenge=${encodeURIComponent(challenge)}`;
     }
 
     console.log(`Opening grader UI at ${graderUrl}`);

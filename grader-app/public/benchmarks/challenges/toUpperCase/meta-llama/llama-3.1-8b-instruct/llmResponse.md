@@ -1,10 +1,3 @@
-## Updated Files
-
-**index.mjs**
-
-```
-```
-
 **functions.mjs**
 
 ```javascript
@@ -13,9 +6,4 @@ export function toUpperCase(str) {
 }
 ```
 
-## Explanation
-
-In the updated code:
-
-*   The `toUpperCase` function in `functions.mjs` is now implemented to return the given string in uppercase using the built-in `toUpperCase` method of the string.
-*   The `index.mjs` file is empty since it only had a test case for the `toUpperCase` function, and the function has been implemented in `functions.mjs`.
+This updated `functions.mjs` file now includes an implementation for the `toUpperCase` function, which uses the built-in `toUpperCase` method of the JavaScript `String` class to return the given string in uppercase.

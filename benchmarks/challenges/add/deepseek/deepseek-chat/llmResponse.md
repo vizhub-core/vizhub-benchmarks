@@ -1,13 +1,15 @@
-I'll help implement the `add` function in `functions.mjs`. Here are the complete updated files:
+I'll update the `functions.mjs` file to implement the `add` function while keeping the `index.mjs` file unchanged since it's already correct. Here are the changes:
 
 **functions.mjs**
 
 ```js
-// Implementation of the add function
+// Implemented the add function to correctly add two numbers
 export function add(a, b) {
   return a + b;
 }
 ```
+
+The `index.mjs` file remains the same since it was already correctly written:
 
 **index.mjs**
 
@@ -24,8 +26,4 @@ console.log("Add test passed");
 process.exit(0); // Exit successfully
 ```
 
-The changes are minimal but complete:
-1. Implemented the `add` function in `functions.mjs` to correctly return the sum of two numbers
-2. Left `index.mjs` unchanged as it was already correct for testing the implementation
-
-These changes should pass the test case by correctly adding 3 and 4 to get 7.
+The implementation simply returns the sum of the two parameters `a` and `b`, which will make the test in `index.mjs` pass successfully.

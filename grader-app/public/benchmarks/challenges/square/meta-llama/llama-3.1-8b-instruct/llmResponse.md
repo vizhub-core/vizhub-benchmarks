@@ -1,25 +1,14 @@
+Here are the updated files:
+
 **functions.mjs**
 
 ```javascript
+// Entire updated code for functions.mjs
 export function square(x) {
-  // Simply multiply the input by itself to return the square
   return x * x;
 }
 ```
 
-**index.mjs** (unchanged)
+The `square` function now correctly calculates the square of the input `x`.
 
-```javascript
-import { square } from "./functions.mjs";
-
-const input = 5;
-const result = square(input);
-if (result !== 25) {
-  console.error(`Test failed: expected 25, got ${result}`);
-  process.exit(1);
-}
-console.log("Square test passed");
-process.exit(0);
-```
-
-No changes to the original files are necessary. The implementation of the square function in `functions.mjs` is straightforward and consistent with standard mathematical notation.
+The `index.mjs` file doesn't need any changes, as it's already using the newly implemented `square` function.

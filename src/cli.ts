@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import dotenv from "dotenv";
 import { runBenchmark, startGraderUI } from "./core";
-import { ensureCacheDir } from "../benchmarks/fileUtils";
+import { ensureCacheDir } from "./fileUtils";
 import { Challenge } from "./types"; // Import Challenge type
 import { challenges } from "./challenges";
 import { models as defaultModels } from "./models";

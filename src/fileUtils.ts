@@ -1,7 +1,7 @@
-import { VizFiles } from "@vizhub/viz-types";
 import fs from "fs";
 import path from "path";
-import { csvFormat } from "d3";
+import { VizFiles } from "@vizhub/viz-types";
+import { csvFormat } from "d3-dsv";
 import { ChallengeResult } from "./types";
 
 /**
@@ -33,10 +33,7 @@ export function writeChallengeFiles(
 
   // Write the LLM response to a file if provided
   if (llmResponse) {
-    const responsePath = path.join(
-      challengeDir,
-      "llmResponse.md"
-    );
+    const responsePath = path.join(challengeDir, "llmResponse.md");
     fs.writeFileSync(responsePath, llmResponse, "utf-8");
   }
 
@@ -101,10 +98,7 @@ export function saveVisualizationOutput(
   }
 
   const outputPath = path.join(outputDir, "output.png");
-  fs.writeFileSync(
-    outputPath,
-    Buffer.from(imageData, "base64")
-  );
+  fs.writeFileSync(outputPath, Buffer.from(imageData, "base64"));
 
   return outputPath;
 }
@@ -120,9 +114,7 @@ export function readResultsFromCsv(
   }
 
   const csvContent = fs.readFileSync(filePath, "utf-8");
-  const lines = csvContent
-    .split("\n")
-    .filter((line) => line.trim());
+  const lines = csvContent.split("\n").filter((line) => line.trim());
   if (lines.length <= 1) {
     return []; // Handle empty or header-only file
   }
@@ -139,23 +131,19 @@ export function readResultsFromCsv(
     // Check if human grading data exists (check if grade column has a value)
     if (values[3] && values[3].trim() !== "") {
       const grade = parseInt(values[3]);
-      const aesthetics = values[4]
-        ? parseInt(values[4])
-        : undefined;
+      const aesthetics = values[4] ? parseInt(values[4]) : undefined;
 
       result.humanGrade = {
-        grade: (grade >= 0 && grade <= 5 ? grade : 0) as
-          | 0
-          | 1
-          | 2
-          | 3
-          | 4
-          | 5,
+        grade: (grade >= 0 && grade <= 5 ? grade : 0) as 0 | 1 | 2 | 3 | 4 | 5,
         aesthetics:
           aesthetics !== undefined && !isNaN(aesthetics)
-            ? ((aesthetics >= 0 && aesthetics <= 5
-                ? aesthetics
-                : 0) as 0 | 1 | 2 | 3 | 4 | 5)
+            ? ((aesthetics >= 0 && aesthetics <= 5 ? aesthetics : 0) as
+                | 0
+                | 1
+                | 2
+                | 3
+                | 4
+                | 5)
             : undefined,
         reviewedBy: values[5] || "",
         reviewedAt: values[6] || "",

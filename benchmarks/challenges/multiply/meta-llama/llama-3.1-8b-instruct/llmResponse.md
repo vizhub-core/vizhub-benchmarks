@@ -1,27 +1,16 @@
-**index.mjs**
-
-```
-// Import the updated multiply function from functions.mjs
-import { multiply } from "./functions.mjs";
-
-// Test the multiply function
-const result = multiply(6, 7);
-if (result !== 42) {
-  console.error(`Test failed: expected 42, got ${result}`);
-  process.exit(1);
-}
-console.log("Multiply test passed");
-process.exit(0);
-```
-
 **functions.mjs**
 
 ```javascript
-// Define the multiply function, which returns the product of two numbers
+/**
+ * Multiply function to calculate the product of two numbers.
+ *
+ * @param {number} a - The first operand.
+ * @param {number} b - The second operand.
+ * @returns {number} - The product of a and b.
+ */
 export function multiply(a, b) {
-  // Return the product of a and b using multiplication
   return a * b;
 }
 ```
 
-These files are idemptotent and correctly multiply two numbers, passing the test in the unit test.
+This updated function takes two numbers as input, `a` and `b`, and returns their product. The logic is straightforward, simply returning the product of `a` and `b`.

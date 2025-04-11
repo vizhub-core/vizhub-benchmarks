@@ -30,11 +30,13 @@
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     d3.csv("data.csv").then(data => {
+      // Parse data
       data.forEach(d => {
         d.date = new Date(d.date);
         d.price = +d.price;
       });
 
+      // Scales
       const x = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
         .range([0, width]);
@@ -43,54 +45,55 @@
         .domain([0, d3.max(data, d => d.price)])
         .range([height, 0]);
 
-      const xAxis = g => g
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
-
-      const yAxis = g => g
-        .call(d3.axisLeft(y));
+      // Axes
+      const xAxis = d3.axisBottom(x).ticks(10);
+      const yAxis = d3.axisLeft(y).ticks(10);
 
       svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", `translate(0,${height})`)
         .call(xAxis)
         .append("text")
+        .attr("class", "axis-label")
         .attr("x", width / 2)
-        .attr("y", margin.bottom)
-        .attr("text-anchor", "middle")
-        .text("Date");
+        .attr("y", 30)
+        .text("Time");
 
       svg.append("g")
+        .attr("class", "y axis")
         .call(yAxis)
         .append("text")
+        .attr("class", "axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left)
+        .attr("y", -30)
         .attr("x", -height / 2)
-        .attr("text-anchor", "middle")
-        .text("Price (USD)");
+        .text("Price");
 
+      // Bars
+      svg.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", d => x(d.date))
+        .attr("y", d => y(d.price))
+        .attr("width", width / data.length)
+        .attr("height", d => height - y(d.price));
+
+      // Bar labels
+      svg.selectAll(".bar-label")
+        .data(data)
+        .enter().append("text")
+        .attr("class", "bar-label")
+        .attr("x", d => x(d.date) + (width / data.length) / 2)
+        .attr("y", d => y(d.price) - 5)
+        .text(d => d.price);
+
+      // Title
       svg.append("text")
         .attr("class", "chart-title")
         .attr("x", width / 2)
         .attr("y", 0 - (margin.top / 2))
         .text("AAPL Stock Price Over Time");
-
-      const barWidth = (width / data.length) * 0.8;
-
-      svg.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-          .attr("class", "bar")
-          .attr("x", d => x(d.date) - barWidth / 2)
-          .attr("y", d => y(d.price))
-          .attr("width", barWidth)
-          .attr("height", d => height - y(d.price));
-
-      svg.selectAll(".bar-label")
-        .data(data)
-        .enter().append("text")
-          .attr("class", "bar-label")
-          .attr("x", d => x(d.date))
-          .attr("y", d => y(d.price) - 5)
-          .text(d => d.price.toFixed(2));
     }).catch(error => {
       console.error("Error loading or processing data:", error);
       svg.append("text")
@@ -121,5 +124,3 @@ date,symbol,price
 2000-11-01,AAPL,190
 2000-12-01,AAPL,200
 ```
-
-This updated `index.html` file includes the complete implementation of the bar chart using D3.js. It loads the data from `data.csv`, parses the dates and prices, sets up the scales and axes, and renders the bars and labels. The chart is responsive and fits within an 800x600 viewport. Basic styling is applied to the bars, axes, labels, and title.

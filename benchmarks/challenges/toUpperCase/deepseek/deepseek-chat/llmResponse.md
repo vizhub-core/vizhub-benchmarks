@@ -6,6 +6,4 @@ export function toUpperCase(str) {
 }
 ```
 
-The `index.mjs` file remains unchanged as it was correctly implemented to test the `toUpperCase` function.
-
-The implementation in `functions.mjs` simply uses the built-in JavaScript `toUpperCase()` method, which converts all the characters in the string to uppercase. This is the most direct and efficient way to achieve the desired functionality.
+The `index.mjs` file remains unchanged as it already contains the correct test logic. The implementation of `toUpperCase` in `functions.mjs` now correctly converts the input string to uppercase using the built-in `toUpperCase()` method of JavaScript strings.

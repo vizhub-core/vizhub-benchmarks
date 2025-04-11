@@ -1,4 +1,74 @@
-**index.html**
+To address the task, we'll update the `index.html` file and create a separate `d3functions.js` file for the D3 logic. We'll keep the `data.csv` file unchanged.
+
+
+**d3functions.js**
+
+```javascript
+// Import D3.js functions into the JavaScript environment.
+import * as d3 from "https://d3js.org/d3.v7.min.js";
+import {csv} from "d3-fetch";
+
+// Helper functions for rendering a bar chart
+
+const parseDate = d3.timeParse("%Y-%m-%d");
+
+export const createSvgBarChart = (svg, margin, data) => {
+  const width = svg.selectAll("rect").nodes()[0].width.baseVal.value;
+  const height = svg.selectAll("rect").nodes()[0].height.baseVal.value;
+
+  const xScale = d3.scaleTime()
+    .domain([d3.min(data, d => parseDate(d.date)), d3.max(data, d => parseDate(d.date))])
+    .range([0, width]);
+
+  const yScale = d3.scaleLinear()
+    .domain([0, d3.max(data, d => d.price)])
+    .range([height, 0]);
+
+  const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%B"));
+  const yAxis = d3.axisLeft(yScale).tickFormat(d => "$" + d);
+
+  svg.select(".x-axis")
+    .remove();
+
+  svg.select(".y-axis")
+    .remove();
+
+  svg.append("g")
+    .attr("class", "x-axis")
+    .attr("transform", `translate(0,${height})`)
+    .call(xAxis);
+
+  svg.append("g")
+    .attr("class", "y-axis")
+    .call(yAxis);
+
+  const bars = svg.selectAll("rect.bar")
+    .data(data);
+
+  bars.exit().remove();
+
+  bars.enter()
+    .append("rect")
+    .attr("class", "bar")
+    .attr("x", (d, i) => xScale(parseDate(d.date)))
+    .attr("y", (d, i) => yScale(d.price))
+    .attr("width", (d, i) => 40)
+    .attr("height", (d, i) => height - yScale(d.price))
+    .merge(bars)
+    .transition()
+    .duration(1000);
+
+  svg.append("text")
+    .attr("class", "chart-title")
+    .attr("x", width / 2)
+    .attr("y", 0 - (margin.top / 2))
+    .text("AAPL Stock Price Over Time");
+
+  return {svg, yScale, xAxis};
+};
+```
+
+**index.html (updated)**
 
 ```html
 <!DOCTYPE html>
@@ -7,113 +77,83 @@
   <title>Stock Price Visualization</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    /* TODO: Add basic CSS styling for the chart, axes, labels, title */
-    body { font-family: sans-serif; }
-    .bar { fill: steelblue; }
-    .bar-label { fill: black; text-anchor: middle; font-size: 10px; }
-    .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
-    .axis text { font-size: 11px; }
-    .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
+    /* CSS for D3.js visualization */
+    body {
+      font-family: sans-serif;
+    }
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .bar-label {
+      fill: black;
+      text-anchor: middle;
+      font-size: 10px;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-size: 11px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+
+    #chart {
+      display:float:center;
+      text-aling:center;
+    }
   </style>
 </head>
 <body>
   <div id="chart"></div>
-  <script type="module">
-    import * as d3 from "https://d3js.org/d3.v7.min.js";
+  <script>
+    import {createSvgBarChart} from './d3functions.js';
 
     const margin = {top: 40, right: 30, bottom: 40, left: 60};
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
-    const svg = d3.select("#chart")
-      .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+    const dataPromise = csv('data.csv');
+    dataPromise.then(data => {
+      const jsonData = data.map(item => ({
+        date: item.date,
+        price: parseFloat(item.price)
+      }));
 
-    d3.csv("data.csv").then(data => {
-      console.log("Data loaded:", data); // Log loaded data
+      dataPromise = createCsv(jsonData);
+      dataPromise.then(data => {
+        const svg = d3.select('#chart').append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
 
-      // Parse date
-      data.forEach(d => {
-        d.date = new Date(d.date);
-        d.symbol = d.symbol;
-        d.price = +d.price; // Convert to number
-      });
-
-      // Sort data by date
-      data.sort((a, b) => a.date - b.date);
-
-      // Set up X and Y scales
-      const xScale = d3.scaleTime()
-        .domain(d3.extent(data, d => d.date))
-        .range([0, width]);
-
-      const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.price)])
-        .range([height, 0]);
-
-      // Draw axes
-      svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale));
-
-      svg.append("g")
-        .attr("class", "axis")
-        .call(d3.axisLeft(yScale));
-
-      // Add title
-      svg.append("text")
-        .attr("class", "chart-title")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
-        .text("AAPL Stock Price Over Time");
-
-      // Draw bars
-      svg.selectAll(".bar")
-        .data(data)
-        .enter()
-        .append("rect")
-          .attr("class", "bar")
-          .attr("x", d => xScale(d.date))
-          .attr("y", d => yScale(d.price))
-          .attr("width", 30)
-          .attr("height", d => height - yScale(d.price));
-
-      // Add labels
-      svg.selectAll(".bar-label")
-        .data(data)
-        .enter()
-        .append("text")
-          .attr("class", "bar-label")
-          .attr("x", d => xScale(d.date) + 15)
-          .attr("y", d => yScale(d.price) - 5)
-          .text(d => d3.format("$.2f")(d.price));
+        // Make bar chart to show the stock price
+        createSvgBarChart(svg, margin, data.jsonData)
+      })
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);
-      // Display error message in the chart area
-      const errorText = d3.select("#chart")
-        .append("text")
-          .attr("x", width / 2)
-          .attr("y", height / 2)
-          .attr("text-anchor", "middle");
-      errorText.text("Error loading data. Check console.");
+
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .text("Error loading data. Check console.");
+
     });
   </script>
 </body>
 </html>
 ```
-
-Note that I made several changes to your original code. 
-
-* I added the `import * as d3 from "https://d3js.org/d3.v7.min.js";` line to import d3.js into the script. I assume that you are not defining your own d3.js functions.
-* I parsed the date column of the data to create Date objects using the `d3.rangeTime` function. 
-* I sorted the data by date before creating the scales to ensure that the bars are in the correct order.
-* I created the bars by using the `enter()` method to select the bars to be added to the SVG, and used the `data()` method to bind the data to the bars.
-* I added labels to the bars by using the `enter()` method to select the labels to be added to the SVG, and used the `data()` method to bind the data to the labels.
-* I removed the placeholder rectangle and the placeholder text from the SVG.
-
-Note that I made no changes to the `data.csv` file.

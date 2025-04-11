@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stock Price Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    /* CSS for D3.js visualization */
+    body {
+      font-family: sans-serif;
+    }
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .bar-label {
+      fill: black;
+      text-anchor: middle;
+      font-size: 10px;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-size: 11px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+
+    #chart {
+      display:float:center;
+      text-aling:center;
+    }
+  </style>
+</head>
+<body>
+  <div id="chart"></div>
+  <script>
+    import {createSvgBarChart} from './d3functions.js';
+
+    const margin = {top: 40, right: 30, bottom: 40, left: 60};
+    const width = 800 - margin.left - margin.right;
+    const height = 600 - margin.top - margin.bottom;
+
+    const dataPromise = csv('data.csv');
+    dataPromise.then(data => {
+      const jsonData = data.map(item => ({
+        date: item.date,
+        price: parseFloat(item.price)
+      }));
+
+      dataPromise = createCsv(jsonData);
+      dataPromise.then(data => {
+        const svg = d3.select('#chart').append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('height', height + margin.top + margin.bottom)
+          .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        // Make bar chart to show the stock price
+        createSvgBarChart(svg, margin, data.jsonData)
+      })
+
+    }).catch(error => {
+      console.error("Error loading or processing data:", error);
+
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .text("Error loading data. Check console.");
+
+    });
+  </script>
+</body>
+</html>

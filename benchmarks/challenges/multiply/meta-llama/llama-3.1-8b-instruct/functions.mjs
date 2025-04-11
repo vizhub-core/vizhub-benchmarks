@@ -1,5 +1,10 @@
-// Define the multiply function, which returns the product of two numbers
+/**
+ * Multiply function to calculate the product of two numbers.
+ *
+ * @param {number} a - The first operand.
+ * @param {number} b - The second operand.
+ * @returns {number} - The product of a and b.
+ */
 export function multiply(a, b) {
-  // Return the product of a and b using multiplication
   return a * b;
 }

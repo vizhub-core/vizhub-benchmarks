@@ -25,7 +25,12 @@ process.exit(0);
 **README.md**
 
 ```md
-// Entire updated content for README.md
-```
+# Project Description
 
-No changes were made to `README.md` as it was not specified to be modified.
+This project contains a simple module to convert a string to uppercase.
+
+## Files
+
+- `functions.mjs`: Contains the `toUpperCase` function.
+- `index.mjs`: Tests the `toUpperCase` function.
+```
