@@ -1,3 +1,4 @@
+
 import { multiply } from "./functions.mjs";
 
 const result = multiply(6, 7);
@@ -7,3 +8,4 @@ if (result !== 42) {
 }
 console.log("Multiply test passed");
 process.exit(0);
+      

@@ -1,4 +1,4 @@
-I'll provide a complete implementation for the index.html file that meets all the specified requirements:
+I'll provide a comprehensive implementation for the `index.html` file that meets all the requirements:
 
 **index.html**
 
@@ -16,6 +16,7 @@ I'll provide a complete implementation for the index.html file that meets all th
       align-items: center; 
       height: 100vh; 
       margin: 0; 
+      background-color: #f4f4f4; 
     }
     .bar { 
       fill: steelblue; 
@@ -48,109 +49,118 @@ I'll provide a complete implementation for the index.html file that meets all th
 <body>
   <div id="chart"></div>
   <script type="module">
-    // D3 Bar Chart Implementation
-    const margin = {top: 40, right: 30, bottom: 40, left: 60};
-    const width = 800 - margin.left - margin.right;
-    const height = 600 - margin.top - margin.bottom;
+    // Main D3 visualization function
+    function createStockPriceChart(selection, { 
+      data, 
+      width = 800, 
+      height = 600, 
+      margin = { top: 40, right: 30, bottom: 40, left: 60 } 
+    }) {
+      // Calculate inner chart dimensions
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
 
-    // Create SVG container
-    const svg = d3.select("#chart")
-      .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform", `translate(${margin.left},${margin.top})`);
+      // Create SVG container
+      const svg = selection
+        .append("svg")
+          .attr("width", width)
+          .attr("height", height)
+        .append("g")
+          .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Load and process data
-    d3.csv("data.csv").then(data => {
-      // Parse date and price
+      // Parse dates and prices
       const parseDate = d3.timeParse("%Y-%m-%d");
-      data.forEach(d => {
-        d.date = parseDate(d.date);
-        d.price = +d.price;
-      });
+      data = data.map(d => ({
+        ...d,
+        date: parseDate(d.date),
+        price: +d.price
+      }));
 
-      // Create X scale (time)
+      // Create scales
       const xScale = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
-        .range([0, width]);
+        .range([0, innerWidth]);
 
-      // Create Y scale (linear)
       const yScale = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.price)])
-        .range([height, 0]);
+        .range([innerHeight, 0]);
 
-      // Create X axis
+      // Create axes
       const xAxis = d3.axisBottom(xScale)
-        .ticks(d3.timeMonth.every(2));
+        .ticks(d3.timeMonth.every(2))
+        .tickFormat(d3.timeFormat("%b %Y"));
 
-      // Create Y axis
-      const yAxis = d3.axisLeft(yScale);
+      const yAxis = d3.axisLeft(yScale)
+        .tickFormat(d3.format("$~f"));
 
-      // Append X axis
+      // Append X-axis
       svg.append("g")
         .attr("class", "axis x-axis")
-        .attr("transform", `translate(0,${height})`)
+        .attr("transform", `translate(0,${innerHeight})`)
         .call(xAxis)
         .selectAll("text")
-          .style("text-anchor", "middle");
+          .attr("transform", "rotate(-45)")
+          .style("text-anchor", "end");
 
-      // Append Y axis
+      // Append Y-axis
       svg.append("g")
         .attr("class", "axis y-axis")
         .call(yAxis);
 
-      // Add X axis label
-      svg.append("text")
-        .attr("transform", `translate(${width/2}, ${height + margin.bottom})`)
-        .style("text-anchor", "middle")
-        .text("Date");
-
-      // Add Y axis label
+      // Add Y-axis label
       svg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
-        .attr("x", 0 - (height / 2))
+        .attr("x", 0 - (innerHeight / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Price ($)");
+        .text("Stock Price ($)");
+
+      // Add X-axis label
+      svg.append("text")
+        .attr("x", innerWidth / 2)
+        .attr("y", innerHeight + margin.bottom)
+        .style("text-anchor", "middle")
+        .text("Date");
 
       // Create bars
-      svg.selectAll(".bar")
+      const bars = svg.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
           .attr("class", "bar")
           .attr("x", d => xScale(d.date))
+          .attr("width", innerWidth / data.length * 0.8)
           .attr("y", d => yScale(d.price))
-          .attr("width", width / data.length * 0.8)
-          .attr("height", d => height - yScale(d.price));
+          .attr("height", d => innerHeight - yScale(d.price));
 
-      // Add price labels on bars
+      // Add price labels
       svg.selectAll(".bar-label")
         .data(data)
         .enter()
         .append("text")
           .attr("class", "bar-label")
-          .attr("x", d => xScale(d.date) + (width / data.length * 0.4))
+          .attr("x", d => xScale(d.date) + (innerWidth / data.length * 0.4))
           .attr("y", d => yScale(d.price) - 5)
           .text(d => `$${d.price}`);
 
-      // Add chart title
+      // Add title
       svg.append("text")
         .attr("class", "chart-title")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
+        .attr("x", innerWidth / 2)
+        .attr("y", 0 - margin.top / 2)
         .text("AAPL Stock Price Over Time");
+    }
 
+    // Load and render the chart
+    d3.csv("data.csv").then(data => {
+      createStockPriceChart(d3.select("#chart"), { data });
     }).catch(error => {
-      console.error("Error loading or processing data:", error);
-      // Display error message in the chart area
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2)
-        .attr("text-anchor", "middle")
-        .text("Error loading data. Check console.");
+      console.error("Error loading the data:", error);
+      d3.select("#chart")
+        .append("div")
+        .style("color", "red")
+        .text("Error loading data");
     });
   </script>
 </body>
@@ -160,21 +170,24 @@ I'll provide a complete implementation for the index.html file that meets all th
 This implementation addresses all the requirements:
 
 1. Uses D3.js v7
-2. Loads data from data.csv
-3. Renders SVG bars in #chart div
+2. Loads data from `data.csv`
+3. Renders SVG bars inside `#chart`
 4. Includes X (time) and Y (price) axes with labels
 5. Uses time scale for X-axis and linear scale for Y-axis
-6. Adds a title to the chart
-7. Displays price values on top of each bar
-8. Responsive and fits within 800x600 viewport
-9. Includes basic styling for chart elements
+6. Adds a chart title
+7. Displays price values as text near each bar
+8. Responsive design with fixed dimensions (800x600)
+9. Includes basic styling
 
 Key features:
-- Parses dates and prices
-- Creates scales and axes
-- Adds hover effect on bars
-- Responsive layout
+- Modular design with `createStockPriceChart` function
 - Error handling for data loading
-- Axis labels and chart title
+- Hover effects on bars
+- Rotated X-axis labels for better readability
+- Centered chart on the page
 
-The visualization should now be fully functional and meet all the specified requirements.
+The code follows D3 best practices:
+- Data joins
+- Separation of concerns
+- Flexible function signature
+- Idempotent rendering

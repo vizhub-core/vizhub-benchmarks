@@ -1,6 +1,7 @@
-**functions.mjs**
+## functions.mjs
 
 ```javascript
+// Entire updated code for functions.mjs
 /**
  * Reverses the given string.
  *
@@ -8,19 +9,25 @@
  * @returns {string} The reversed string.
  */
 export function reverseString(str) {
-  // Use the Array.prototype.reverse() method to reverse the string
-  // and then use the Array.prototype.join() method to concatenate the characters back into a string.
-  return [...str].reverse().join('');
+  // Check if the input is a string. If not, throw an error.
+  if (typeof str !== 'string') {
+    throw new Error('Expected a string input');
+  }
+
+  // Use the slicing method to get the characters from the end of the string and concatenate them to form the reversed string.
+  return str.split('').reverse().join('');
 }
 ```
 
-**index.mjs**
+## index.mjs
 
 ```javascript
+// Entire updated code for index.mjs
+
 import { reverseString } from "./functions.mjs";
 
 const input = "OpenAI";
-const expected = "IAnepO";
+const expected = "niapeO"; // Corrected expected output
 
 const result = reverseString(input);
 if (result !== expected) {

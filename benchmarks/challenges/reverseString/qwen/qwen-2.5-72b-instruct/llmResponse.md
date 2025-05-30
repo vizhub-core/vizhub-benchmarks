@@ -1,3 +1,12 @@
+**functions.mjs**
+
+```js
+// Implement the reverseString function
+export function reverseString(str) {
+  return str.split('').reverse().join('');
+}
+```
+
 **index.mjs**
 
 ```js
@@ -13,13 +22,4 @@ if (result !== expected) {
 }
 console.log("reverseString test passed");
 process.exit(0);
-```
-
-**functions.mjs**
-
-```js
-// Implement the reverseString function
-export function reverseString(str) {
-  return str.split('').reverse().join('');
-}
 ```

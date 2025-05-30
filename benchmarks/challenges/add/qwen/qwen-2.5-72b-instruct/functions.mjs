@@ -1,4 +1,4 @@
-// Implement the add function to correctly add two numbers
+// Implement the add function
 export function add(a, b) {
   return a + b;
 }

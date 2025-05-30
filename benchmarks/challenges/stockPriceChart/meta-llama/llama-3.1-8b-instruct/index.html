@@ -16,7 +16,6 @@
 <body>
   <div id="chart"></div>
   <script type="module"> // Use type="module" for potential imports if refactored
-    // TODO: Implement the bar chart using D3.js
     // 1. Set up SVG dimensions and margins
     // 2. Load data from data.csv using d3.csv
     // 3. Parse data (dates and prices)
@@ -38,42 +37,72 @@
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // --- Your D3 code starts here ---
-
-    // Example: Loading data (replace with full implementation)
+    // Load data
     d3.csv("data.csv").then(data => {
-      console.log("Data loaded:", data); // Log loaded data
+      // Parse dates and prices
+      data.forEach(d => {
+        d.date = new Date(d.date);
+        d.price = +d.price;
+      });
 
-      // Implement parsing, scales, axes, bars, labels, title here...
+      // Create scales
+      const xScale = d3.scaleTime()
+        .domain(d3.extent(data, d => d.date))
+        .range([0, width]);
 
-      // Placeholder: Add a title
+      const yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.price)])
+        .range([height, 0]);
+
+      // Create axes
+      const xAxis = d3.axisBottom(xScale);
+      const yAxis = d3.axisLeft(yScale);
+
+      // Add axes
+      svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(xAxis);
+
+      svg.append("g")
+        .attr("class", "axis")
+        .call(yAxis);
+
+      // Create bars
+      svg.selectAll("rect")
+        .data(data.filter(d => d.symbol === "AAPL"))
+        .join("rect")
+        .attr("class", "bar")
+        .attr("x", d => xScale(d.date))
+        .attr("y", d => yScale(d.price))
+        .attr("width", xScale(d3.extent(data, d => d.date)[1] - d3.extent(data, d => d.date)[0]) / data.length)
+        .attr("height", d => height - yScale(d.price));
+
+      // Add labels
+      svg.selectAll("text.bar-label")
+        .data(data.filter(d => d.symbol === "AAPL"))
+        .join("text")
+        .attr("class", "bar-label")
+        .attr("x", d => xScale(d.date) + xScale(d3.extent(data, d => d.date)[1] - d3.extent(data, d => d.date)[0]) / 2)
+        .attr("y", d => yScale(d.price) - 5)
+        .text(d => d.price);
+
+      // Add a title
       svg.append("text")
-         .attr("class", "chart-title")
-         .attr("x", width / 2)
-         .attr("y", 0 - (margin.top / 2))
-         .text("AAPL Stock Price Over Time (Implementation Pending)");
-
-      // Make sure something is added to the #chart div for the test runner
-      svg.append("rect")
-         .attr("width", 50)
-         .attr("height", 50)
-         .attr("fill", "lightgray")
-         .attr("x", 10)
-         .attr("y", 10);
-      console.log("Placeholder added to SVG.");
-
+        .attr("class", "chart-title")
+        .attr("x", width / 2)
+        .attr("y", 0 - (margin.top / 2))
+        .text("AAPL Stock Price Over Time");
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);
       // Display error message in the chart area
-       svg.append("text")
-         .attr("x", width / 2)
-         .attr("y", height / 2)
-         .attr("text-anchor", "middle")
-         .text("Error loading data. Check console.");
+      svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .text("Error loading data. Check console.");
     });
-
-    // --- Your D3 code ends here ---
 
   </script>
 </body>

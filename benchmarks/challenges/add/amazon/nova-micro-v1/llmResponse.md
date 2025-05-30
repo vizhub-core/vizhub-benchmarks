@@ -23,9 +23,4 @@ console.log("Add test passed");
 process.exit(0); // Exit successfully
 ```
 
-**README.md**
-
-```md
-```
-
-No changes needed for `README.md` as it is required to keep it.
+No changes are needed to `README.md` as it should be kept as is. The `functions.mjs` file now correctly implements the `add` function, and the `index.mjs` file contains the test to verify the implementation.

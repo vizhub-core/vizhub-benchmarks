@@ -9,7 +9,7 @@
   <style>
     body { font-family: sans-serif; }
     .bar { fill: steelblue; }
-    .bar-label { fill: black; text-anchor: middle; font-size: 11px; }
+    .bar-label { fill: white; text-anchor: middle; font-size: 10px; }
     .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
     .axis text { font-size: 11px; }
     .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
@@ -29,52 +29,60 @@
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    // Implement parsing, scales, axes, bars, labels, title here...
     d3.csv("data.csv").then(data => {
-      // Parse the date / time
-      data.forEach(function(d) {
-        d.date = d3.timeParse("%Y-%m-%d")(d.date);
+      console.log("Data loaded:", data);
+
+      // Parse dates
+      data.forEach(d => {
+        d.date = new Date(d.date);
         d.price = +d.price;
       });
 
-      // Set the ranges
+      // Create scales
       const x = d3.scaleTime()
-                  .domain(d3.extent(data, d => d.date))
-                  .range([0, width]);
+        .domain(d3.extent(data, d => d.date))
+        .range([0, width]);
 
       const y = d3.scaleLinear()
-                  .domain([0, d3.max(data, d => d.price) + 20])
-                  .nice()
-                  .range([height, 0]);
+        .domain([0, d3.max(data, d => d.price)])
+        .range([height, 0]);
 
-      // Add the X Axis
+      // Create axes
+      const xAxis = d3.axisBottom(x)
+        .ticks(d3.timeMonth.every(1)); // Example: Show a tick for each month
+
+      const yAxis = d3.axisLeft(y)
+        .ticks(10); // Example: Show 10 ticks
+
+      // Append axes
       svg.append("g")
-         .attr("class", "axis")
-         .attr("transform", `translate(0,${height})`)
-         .call(d3.axisBottom(x));
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(xAxis);
 
-      // Add the Y Axis
       svg.append("g")
-         .attr("class", "axis")
-         .call(d3.axisLeft(y));
+        .attr("class", "axis y-axis")
+        .call(yAxis);
 
-      // Add bars
+      // Create bars
       svg.selectAll(".bar")
-         .data(data)
-         .join("rect")
-           .attr("class", "bar")
-           .attr("x", d => x(d.date))
-           .attr("width", width / data.length - 1)
-           .attr("y", d => y(d.price))
-           .attr("height", d => height - y(d.price));
+        .data(data)
+        .join("rect")
+          .attr("class", "bar")
+          .attr("x", d => x(d.date))
+          .attr("y", d => y(d.price))
+          .attr("width", width / data.length - 2)
+          .attr("height", d => height - y(d.price));
 
-      // Add labels on top of bars
+      // Add bars labels
       svg.selectAll(".bar-label")
-         .data(data)
-         .join("text")
-           .attr("class", "bar-label")
-           .attr("x", d => x(d.date) + (width / data.length - 1) / 2)
-           .attr("y", d => y(d.price) - 5)
-           .text(d => d.price);
+        .data(data)
+        .join("text")
+          .attr("class", "bar-label")
+          .attr("x", d => x(d.date) + (width / data.length - 2) / 2)
+          .attr("y", d => y(d.price) - 3)
+          .text(d => d.price);
 
       // Add a title
       svg.append("text")
@@ -86,18 +94,32 @@
     }).catch(error => {
       console.error("Error loading or processing data:", error);
       // Display error message in the chart area
-      svg.append("text")
+       svg.append("text")
          .attr("x", width / 2)
          .attr("y", height / 2)
          .attr("text-anchor", "middle")
          .text("Error loading data. Check console.");
     });
+
   </script>
 </body>
 </html>
 ```
 
-**README.md**
+**data.csv**
 
 ```
+date,symbol,price
+2000-01-01,AAPL,100
+2000-02-01,AAPL,120
+2000-03-01,AAPL,115
+2000-04-01,AAPL,140
+2000-05-01,AAPL,135
+2000-06-01,AAPL,160
+2000-07-01,AAPL,165
+2000-08-01,AAPL,170
+2000-09-01,AAPL,155
+2000-10-01,AAPL,180
+2000-11-01,AAPL,190
+2000-12-01,AAPL,200
 ```

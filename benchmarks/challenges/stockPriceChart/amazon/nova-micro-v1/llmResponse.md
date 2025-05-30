@@ -31,7 +31,7 @@
 
     d3.csv("data.csv").then(data => {
       const parsedData = data.map(d => ({
-        date: new Date(d.date),
+        date: d3.timeParse("%Y-%m-%d")(d.date),
         price: +d.price
       }));
 
@@ -40,12 +40,12 @@
         .range([0, width]);
 
       const y = d3.scaleLinear()
-        .domain(d3.extent(parsedData, d => d.price))
+        .domain([0, d3.max(parsedData, d => d.price)])
         .range([height, 0]);
 
       const xAxis = g => g
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
+        .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
 
       const yAxis = g => g
         .call(d3.axisLeft(y));
@@ -55,8 +55,8 @@
         .append("text")
         .attr("class", "axis-label")
         .attr("x", width / 2)
-        .attr("y", height + margin.bottom)
-        .attr("text-anchor", "middle")
+        .attr("y", height + 20)
+        .style("text-anchor", "middle")
         .text("Date");
 
       svg.append("g")
@@ -64,9 +64,9 @@
         .append("text")
         .attr("class", "axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left + 10)
-        .attr("x", -height / 2)
-        .attr("text-anchor", "middle")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .style("text-anchor", "middle")
         .text("Price");
 
       svg.append("text")
@@ -78,16 +78,14 @@
 
       const bar = svg.selectAll(".bar")
         .data(parsedData)
-        .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", d => x(d.date))
-        .attr("width", 2)
-        .attr("y", d => y(d.price))
-        .attr("height", d => height - y(d.price));
+        .join("rect")
+          .attr("class", "bar")
+          .attr("x", d => x(d.date))
+          .attr("width", x.bandwidth())
+          .attr("y", d => y(d.price))
+          .attr("height", d => height - y(d.price));
 
-      const barLabel = svg.selectAll(".bar-label")
-        .data(parsedData)
-        .enter().append("text")
+      bar.append("text")
         .attr("class", "bar-label")
         .attr("x", d => x(d.date) + x.bandwidth() / 2)
         .attr("y", d => y(d.price) - 4)
@@ -110,7 +108,7 @@
 
 **data.csv**
 
-```csv
+```
 date,symbol,price
 2000-01-01,AAPL,100
 2000-02-01,AAPL,120
@@ -126,4 +124,13 @@ date,symbol,price
 2000-12-01,AAPL,200
 ```
 
-This implementation includes all the required features: loading data from `data.csv`, parsing it, creating scales, rendering bars, adding labels, and ensuring responsiveness. The chart title and axis labels are also properly added.
+In this implementation, we have:
+1. Loaded the data from `data.csv`.
+2. Parsed the dates and prices.
+3. Created time and linear scales for the X and Y axes.
+4. Added the X and Y axes with appropriate labels.
+5. Added a title to the chart.
+6. Rendered bars based on the data.
+7. Added labels on top of each bar.
+8. Ensured the visualization fits within an 800x600 viewport.
+9. Added basic styling for the chart, bars, and axes.

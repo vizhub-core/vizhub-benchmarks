@@ -20,3 +20,11 @@ if (result !== 42) {
 console.log("Multiply test passed");
 process.exit(0);
 ```
+
+**README.md**
+
+```markdown
+# Project Description
+
+This project contains a simple implementation of a multiply function and a unit test for it.
+```

@@ -1,3 +1,5 @@
+I'll implement the `toUpperCase` function in `functions.mjs`. Here's the complete updated file:
+
 **functions.mjs**
 
 ```js
@@ -6,4 +8,6 @@ export function toUpperCase(str) {
 }
 ```
 
-The `index.mjs` file remains unchanged as it already contains the correct test logic. The implementation of `toUpperCase` in `functions.mjs` now correctly converts the input string to uppercase using the built-in `toUpperCase()` method of JavaScript strings.
+The `index.mjs` file doesn't need any changes as it already contains the correct test case. The implementation simply uses JavaScript's built-in `toUpperCase()` string method to convert the input string to uppercase.
+
+This solution will pass the test case in `index.mjs` which expects "hello" to be converted to "HELLO".

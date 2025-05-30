@@ -1,8 +1,12 @@
 # Project Description
 
-This project contains a simple module to convert a string to uppercase.
+This project contains a simple module to test the `toUpperCase` function.
 
 ## Files
 
-- `functions.mjs`: Contains the `toUpperCase` function.
-- `index.mjs`: Tests the `toUpperCase` function.
+- `index.mjs`: The main file to test the `toUpperCase` function.
+- `functions.mjs`: The module containing the `toUpperCase` function.
+
+## Instructions
+
+To run the test, simply execute the `index.mjs` file using Node.js.

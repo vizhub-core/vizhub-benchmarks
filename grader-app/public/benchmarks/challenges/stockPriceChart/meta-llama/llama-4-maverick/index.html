@@ -26,12 +26,10 @@
       .append("g")
       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    d3.csv("data.csv").then(data => {
-      data.forEach(d => {
-        d.date = new Date(d.date);
-        d.price = +d.price;
-      });
-
+    d3.csv("data.csv", d => ({
+      date: new Date(d.date),
+      price: +d.price
+    })).then(data => {
       const xScale = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
         .range([0, width]);
@@ -48,11 +46,22 @@
       svg.append("g")
         .attr("class", "axis")
         .attr("transform", `translate(0,${height})`)
-        .call(xAxis);
+        .call(xAxis)
+        .append("text")
+        .attr("fill", "#000")
+        .attr("x", width / 2)
+        .attr("y", 30)
+        .text("Date");
 
       svg.append("g")
         .attr("class", "axis")
-        .call(yAxis);
+        .call(yAxis)
+        .append("text")
+        .attr("fill", "#000")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .text("Price");
 
       svg.selectAll(".bar")
         .data(data)
@@ -70,7 +79,7 @@
         .append("text")
         .attr("class", "bar-label")
         .attr("x", d => xScale(d.date))
-        .attr("y", d => yScale(d.price) - 5)
+        .attr("y", d => yScale(d.price) - 3)
         .text(d => d.price);
 
       svg.append("text")
@@ -78,20 +87,6 @@
         .attr("x", width / 2)
         .attr("y", 0 - (margin.top / 2))
         .text("AAPL Stock Price Over Time");
-
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height + margin.bottom - 5)
-        .attr("text-anchor", "middle")
-        .text("Date");
-
-      svg.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", 0 - margin.left + 15)
-        .attr("text-anchor", "middle")
-        .text("Price");
-
     }).catch(error => {
       console.error("Error loading or processing data:", error);
       svg.append("text")

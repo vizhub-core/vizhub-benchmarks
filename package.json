@@ -31,15 +31,17 @@
   "homepage": "https://github.com/vizhub-core/vizhub-benchmarks#readme",
   "devDependencies": {
     "@types/d3-dsv": "^3.0.7",
-    "i": "^0.3.7",
-    "npm": "^11.3.0",
+    "npm": "^11.4.1",
     "ts-node": "^10.9.2",
-    "vite-node": "^3.1.1"
+    "vite-node": "^3.1.4"
   },
   "dependencies": {
+    "@langchain/core": "^0.3.57",
+    "@langchain/openai": "^0.5.11",
     "@vizhub/viz-types": "^0.1.0",
     "d3-dsv": "^3.0.1",
-    "editcodewithai": "^1.0.0",
-    "puppeteer": "^24.6.1"
+    "editcodewithai": "^1.1.0",
+    "langchain": "^0.3.27",
+    "puppeteer": "^24.9.0"
   }
 }

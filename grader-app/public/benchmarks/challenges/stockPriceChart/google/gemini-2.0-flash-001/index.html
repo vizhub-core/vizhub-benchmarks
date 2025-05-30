@@ -27,11 +27,7 @@
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     d3.csv("data.csv", d3.autoType).then(data => {
-      // Parse dates
-      const parseDate = d3.timeParse("%Y-%m-%d");
-      data.forEach(d => {
-        d.date = parseDate(d.date);
-      });
+      console.log("Data loaded:", data);
 
       // Scales
       const x = d3.scaleTime()
@@ -62,8 +58,8 @@
         .enter().append("rect")
           .attr("class", "bar")
           .attr("x", d => x(d.date))
-          .attr("y", d => y(d.price))
           .attr("width", width / data.length - 1)
+          .attr("y", d => y(d.price))
           .attr("height", d => height - y(d.price));
 
       // Bar labels
@@ -73,39 +69,23 @@
           .attr("class", "bar-label")
           .attr("x", d => x(d.date) + (width / data.length - 1) / 2)
           .attr("y", d => y(d.price) - 5)
-          .text(d => d.price);
+          .text(d => d.price)
+          .style("fill", d => { return (d.price > 175) ? 'white':'black';});
 
       // Title
       svg.append("text")
-        .attr("class", "chart-title")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
-        .text("AAPL Stock Price Over Time");
-
-      // Y-axis label
-      svg.append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 0 - margin.left)
-          .attr("x",0 - (height / 2))
-          .attr("dy", "1em")
-          .style("text-anchor", "middle")
-          .text("Price ($)");
-
-      // X-axis label
-      svg.append("text")
-          .attr("x", width / 2)
-          .attr("y", height + margin.bottom - 5)
-          .style("text-anchor", "middle")
-          .text("Date");
-
+         .attr("class", "chart-title")
+         .attr("x", width / 2)
+         .attr("y", 0 - (margin.top / 2))
+         .text("AAPL Stock Price Over Time");
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);
-      svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height / 2)
-        .attr("text-anchor", "middle")
-        .text("Error loading data. Check console.");
+       svg.append("text")
+         .attr("x", width / 2)
+         .attr("y", height / 2)
+         .attr("text-anchor", "middle")
+         .text("Error loading data. Check console.");
     });
 
   </script>

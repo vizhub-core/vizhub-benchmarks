@@ -1,13 +1,11 @@
 **functions.mjs**
 
 ```javascript
-// Implemented the add function correctly
+// Export the add function
 export function add(a, b) {
+  // The function takes two parameters, adds them, and returns the result
   return a + b;
 }
-
 ```
 
-This file simply implements the add function as it should be. It takes two numbers as inputs, `a` and `b`, and returns their sum.
-
-This change will pass the test in `index.mjs`.
+This implementation is a simple one, taking advantage of JavaScript's built-in addition operation (`a + b`).

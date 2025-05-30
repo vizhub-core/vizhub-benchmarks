@@ -1,3 +1,4 @@
+
 import { add } from "./functions.mjs";
 
 // A simple test:
@@ -8,3 +9,4 @@ if (result !== 7) {
 }
 console.log("Add test passed");
 process.exit(0); // Exit successfully
+        

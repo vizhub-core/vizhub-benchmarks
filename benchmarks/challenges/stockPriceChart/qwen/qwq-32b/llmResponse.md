@@ -1,0 +1,131 @@
+**index.html**
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stock Price Visualization</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: sans-serif; }
+    .bar { fill: steelblue; }
+    .bar-label { fill: black; text-anchor: middle; font-size: 10px; }
+    .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
+    .axis text { font-size: 11px; }
+    .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
+    .axis-label {
+      font-weight: bold;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="chart"></div>
+  <script type="module">
+    const margin = {top: 40, right: 30, bottom: 40, left: 60};
+    const width = 800 - margin.left - margin.right;
+    const height = 600 - margin.top - margin.bottom;
+
+    const svg = d3.select("#chart")
+      .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    d3.csv("data.csv").then(data => {
+      // Parse data
+      data.forEach(d => {
+        d.date = d3.timeParse("%Y-%m-%d")(d.date);
+        d.price = +d.price;
+      });
+
+      // Calculate bar width
+      const barWidth = Math.floor(width / data.length);
+
+      // Create scales
+      const xScale = d3.scaleTime()
+        .domain(d3.extent(data, d => d.date))
+        .range([0, width]);
+
+      const yScale = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.price)])
+        .nice()
+        .range([height, 0]);
+
+      // Create axes
+      const xAxis = d3.axisBottom(xScale)
+          .ticks(d3.timeMonth.every(1))
+          .tickFormat(d3.timeFormat("%b"));
+
+      const yAxis = d3.axisLeft(yScale)
+          .ticks(5);
+
+      // Append axes
+      svg.append("g")
+          .attr("class", "axis x-axis")
+          .attr("transform", `translate(0,${height})`)
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "axis y-axis")
+          .call(yAxis);
+
+      // Append axis labels
+      svg.append("text")
+          .attr("class", "axis-label")
+          .attr("x", width/2)
+          .attr("y", height + margin.bottom + 10)
+          .text("Date");
+
+      svg.append("text")
+          .attr("class", "axis-label")
+          .attr("transform", `translate(-${margin.left}, ${height / 2}) rotate(-90)`)
+          .text("Price ($)");
+
+      // Create bars
+      const bars = svg.selectAll(".bar")
+          .data(data)
+          .join("rect")
+            .attr("class", "bar")
+            .attr("x", d => xScale(d.date) - barWidth / 2)
+            .attr("y", d => yScale(d.price))
+            .attr("width", barWidth)
+            .attr("height", d => height - yScale(d.price));
+
+      // Create labels on bars
+      const labels = svg.selectAll(".bar-label")
+          .data(data)
+          .join("text")
+            .attr("class", "bar-label")
+            .attr("x", d => xScale(d.date))
+            .attr("y", d => yScale(d.price) - 5)
+            .text(d => d.price)
+            .attr("text-anchor", "middle");
+
+      // Add title
+      svg.select(".chart-title").remove();
+      svg.append("text")
+          .attr("class", "chart-title")
+          .attr("x", width / 2)
+          .attr("y", -margin.top / 2)
+          .text("AAPL Stock Price Over Time");
+
+      // Cleanup placeholder elements
+      svg.select("rect").remove();
+      svg.selectAll(".chart-title").filter(d => 
+        String(svg.select(".chart-title").text()).includes("Implementation")
+      ).remove();
+    }).catch(error => {
+      console.error("Error loading or processing data:", error);
+      svg.append("text")
+        .attr("class", "error-text")
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .text("Error loading data. Check console.");
+    });
+  </script>
+</body>
+</html>
+```

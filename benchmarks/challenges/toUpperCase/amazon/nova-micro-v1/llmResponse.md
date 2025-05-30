@@ -27,10 +27,20 @@ process.exit(0);
 ```md
 # Project Description
 
-This project contains a simple module to convert a string to uppercase.
+This project contains a simple module to test the `toUpperCase` function.
 
 ## Files
 
-- `functions.mjs`: Contains the `toUpperCase` function.
-- `index.mjs`: Tests the `toUpperCase` function.
+- `index.mjs`: The main file to test the `toUpperCase` function.
+- `functions.mjs`: The module containing the `toUpperCase` function.
+
+## Instructions
+
+To run the test, simply execute the `index.mjs` file using Node.js.
+
+```sh
+node index.mjs
+```
+
+If the test passes, it will print "toUpperCase test passed". If it fails, it will print an error message and exit with a non-zero status.
 ```

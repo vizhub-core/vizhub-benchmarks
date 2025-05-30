@@ -3,7 +3,7 @@
 ```js
 // TODO: Implement the add function
 export function add(a, b) {
-  return a + b; // Implementation of the add function
+  return a + b;
 }
 ```
 
@@ -20,9 +20,4 @@ if (result !== 7) {
 }
 console.log("Add test passed");
 process.exit(0); // Exit successfully
-```
-
-**README.md**
-
-```md
 ```

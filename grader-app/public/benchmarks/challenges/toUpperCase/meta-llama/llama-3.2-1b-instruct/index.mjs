@@ -1,4 +1,5 @@
-import { toUpperCase } from "./toUpperCase.js";
+
+import { toUpperCase } from "./functions.mjs";
 
 const input = "hello";
 const result = toUpperCase(input);
@@ -8,3 +9,4 @@ if (result !== "HELLO") {
 }
 console.log("toUpperCase test passed");
 process.exit(0);
+      

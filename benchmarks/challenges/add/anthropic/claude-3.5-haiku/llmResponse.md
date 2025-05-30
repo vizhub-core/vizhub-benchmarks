@@ -1,5 +1,3 @@
-To solve this task, I'll implement the `add` function in `functions.mjs`:
-
 **functions.mjs**
 
 ```js
@@ -9,15 +7,13 @@ export function add(a, b) {
 ```
 
 The implementation is straightforward:
-- It takes two parameters `a` and `b`
-- Uses the `+` operator to add them together
-- Returns the result
+- The function takes two parameters `a` and `b`
+- It returns the sum of these two parameters using the `+` operator
+- This will pass the test in `index.mjs` which checks if `add(3, 4)` returns `7`
 
-This will pass the test in `index.mjs` which checks if `add(3, 4)` returns `7`.
+The function works with:
+- Integers
+- Floating point numbers 
+- Will concatenate strings if non-numeric values are passed
 
-The function will:
-- Work with positive numbers
-- Work with negative numbers 
-- Correctly handle adding integers
-
-No changes are needed to `index.mjs`, as the test case is already set up correctly.
+This simple implementation meets the requirements of the test case and provides a basic addition function.

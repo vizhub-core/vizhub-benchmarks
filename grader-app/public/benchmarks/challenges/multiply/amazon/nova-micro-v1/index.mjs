@@ -1,3 +1,4 @@
+// Entire updated code for index.mjs
 import { multiply } from "./functions.mjs";
 
 const result = multiply(6, 7);

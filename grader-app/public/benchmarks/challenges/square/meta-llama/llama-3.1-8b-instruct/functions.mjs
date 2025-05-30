@@ -1,4 +1,4 @@
-// Entire updated code for functions.mjs
+// Implement the square function
 export function square(x) {
   return x * x;
 }

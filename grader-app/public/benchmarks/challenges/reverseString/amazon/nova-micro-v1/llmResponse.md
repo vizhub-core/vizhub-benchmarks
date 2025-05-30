@@ -27,14 +27,22 @@ process.exit(0);
 **README.md**
 
 ```md
-// README.md
+# Project
 
 This project contains a simple function to reverse a string.
 
 ## Files
 
-- `functions.mjs`
-- `index.mjs`
+- `index.mjs`: The main file that tests the `reverseString` function.
+- `functions.mjs`: The file containing the `reverseString` function.
+
+## Usage
+
+To test the `reverseString` function, run the following command in the terminal:
+
+```sh
+node index.mjs
 ```
 
-**Note:** The `functions.mjs` file now contains the implementation of the `reverseString` function, and the `index.mjs` file contains the test for this function. The `README.md` is kept as per the instructions, and no other files are needed.
+If the test passes, it will print "reverseString test passed". If it fails, it will print an error message.
+```

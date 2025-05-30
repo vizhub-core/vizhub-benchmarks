@@ -15,11 +15,13 @@
 </head>
 <body>
   <div id="chart"></div>
-  <script type="module"> // Use type="module" for potential imports if refactored
+  <script type="module">
+    // Set up SVG dimensions and margins
     const margin = {top: 40, right: 30, bottom: 40, left: 60};
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
+    // Create SVG container
     const svg = d3.select("#chart")
       .append("svg")
         .attr("width", width + margin.left + margin.right)
@@ -27,8 +29,9 @@
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    // Load data from data.csv
     d3.csv("data.csv").then(data => {
-      console.log("Data loaded:", data); // Log loaded data
+      console.log("Data loaded:", data);
 
       // Parse data
       data.forEach(d => {
@@ -37,54 +40,56 @@
       });
 
       // Create scales
-      const x = d3.scaleTime()
+      const xScale = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
         .range([0, width]);
 
-      const y = d3.scaleLinear()
+      const yScale = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.price)])
         .range([height, 0]);
 
       // Create axes
-      const xAxis = g => g
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x))
-        .selectAll("text")
-        .attr("transform", "rotate(-45)")
-        .attr("dx", "-.8em")
-        .attr("dy", ".15em")
-        .attr("text-anchor", "end");
+      const xAxis = d3.axisBottom(xScale);
+      const yAxis = d3.axisLeft(yScale);
 
-      const yAxis = g => g
-        .call(d3.axisLeft(y))
-        .ticks(null, "s");
-
-      // Create SVG container and append axes
+      // Append axes
       svg.append("g")
         .attr("class", "x-axis")
-        .call(xAxis);
+        .attr("transform", `translate(0, ${height})`)
+        .call(xAxis)
+        .append("text")
+          .attr("class", "axis-label")
+          .attr("x", width / 2)
+          .attr("y", 40)
+          .text("Date");
 
       svg.append("g")
         .attr("class", "y-axis")
-        .call(yAxis);
+        .call(yAxis)
+        .append("text")
+          .attr("class", "axis-label")
+          .attr("transform", "rotate(-90)")
+          .attr("y", -40)
+          .attr("x", -height / 2)
+          .text("Price");
 
-      // Create bars based on data
-      const bars = svg.selectAll("rect")
+      // Create bars
+      svg.selectAll(".bar")
         .data(data)
         .enter().append("rect")
         .attr("class", "bar")
-        .attr("x", d => x(d.date))
-        .attr("y", d => y(d.price))
-        .attr("width", x.bandwidth())
-        .attr("height", d => height - y(d.price));
+        .attr("x", d => xScale(d.date))
+        .attr("y", d => yScale(d.price))
+        .attr("width", xScale.bandwidth())
+        .attr("height", d => height - yScale(d.price));
 
       // Add labels on top of bars
-      const barLabels = svg.selectAll("text")
+      svg.selectAll(".bar-label")
         .data(data)
         .enter().append("text")
         .attr("class", "bar-label")
-        .attr("x", d => x(d.date) + x.bandwidth() / 2)
-        .attr("y", d => y(d.price) - 5)
+        .attr("x", d => xScale(d.date) + xScale.bandwidth() / 2)
+        .attr("y", d => yScale(d.price) - 5)
         .text(d => d.price);
 
       // Add a title
@@ -96,7 +101,6 @@
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);
-      // Display error message in the chart area
       svg.append("text")
         .attr("x", width / 2)
         .attr("y", height / 2)

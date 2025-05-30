@@ -27,4 +27,4 @@ process.exit(0);
 ```md
 ```
 
-(If there was a README file, it remains unchanged as per the instructions.)
+(If there was a README.md file, it remains unchanged as per the instructions.)
