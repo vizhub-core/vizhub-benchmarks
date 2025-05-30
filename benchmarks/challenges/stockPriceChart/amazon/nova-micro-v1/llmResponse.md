@@ -13,14 +13,10 @@
     .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
     .axis text { font-size: 11px; }
     .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
-    .chart {
-      width: 800px;
-      height: 600px;
-    }
   </style>
 </head>
 <body>
-  <div id="chart" class="chart"></div>
+  <div id="chart"></div>
   <script type="module">
     const margin = {top: 40, right: 30, bottom: 40, left: 60};
     const width = 800 - margin.left - margin.right;
@@ -34,85 +30,77 @@
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     d3.csv("data.csv").then(data => {
-      // Parse data
-      data.forEach(d => {
-        d.date = d3.timeParse("%Y-%m-%d")(d.date);
-        d.price = +d.price;
-      });
+      const parsedData = data.map(d => ({
+        date: d3.timeParse("%Y-%m-%d")(d.date),
+        price: +d.price
+      }));
 
-      // Create scales
       const x = d3.scaleTime()
-        .domain(d3.extent(data, d => d.date))
+        .domain(d3.extent(parsedData, d => d.date))
         .range([0, width]);
 
       const y = d3.scaleLinear()
-        .domain(d3.extent(data, d => d.price))
+        .domain([0, d3.max(parsedData, d => d.price)])
         .range([height, 0]);
 
-      // Create axes
-      const xAxis = d3.axisBottom(x).ticks(width / 80);
-      const yAxis = d3.axisLeft(y);
-
-      // Add axes
-      svg.append("g")
-        .attr("class", "x axis")
+      const xAxis = g => g
         .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0));
+
+      const yAxis = g => g
+        .call(d3.axisLeft(y));
+
+      svg.append("g")
         .call(xAxis)
         .append("text")
-          .attr("class", "axis-label")
-          .attr("x", width)
-          .attr("y", -6)
-          .attr("dy", "-1.21em")
-          .attr("text-anchor", "end")
-          .text("Date");
+        .attr("class", "axis-label")
+        .attr("x", width / 2)
+        .attr("y", height + 20)
+        .style("text-anchor", "middle")
+        .text("Date");
 
       svg.append("g")
-        .attr("class", "y axis")
         .call(yAxis)
         .append("text")
-          .attr("class", "axis-label")
-          .attr("transform", "rotate(-90)")
-          .attr("y", 6)
-          .attr("dy", "-1.21em")
-          .attr("text-anchor", "end")
-          .text("Price");
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .style("text-anchor", "middle")
+        .text("Price");
 
-      // Add title
       svg.append("text")
-         .attr("class", "chart-title")
-         .attr("x", width / 2)
-         .attr("y", 0 - (margin.top / 2))
-         .attr("text-anchor", "middle")
-         .text("AAPL Stock Price Over Time");
+        .attr("class", "chart-title")
+        .attr("x", width / 2)
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")
+        .text("AAPL Stock Price Over Time");
 
-      // Add bars
-      svg.selectAll(".bar")
-        .data(data)
+      const bar = svg.selectAll(".bar")
+        .data(parsedData)
         .join("rect")
           .attr("class", "bar")
           .attr("x", d => x(d.date))
+          .attr("width", x.bandwidth())
           .attr("y", d => y(d.price))
-          .attr("width", 2)
-          .attr("height", d => height - y(d.price))
-          .append("title")
-            .text(d => d.price);
+          .attr("height", d => height - y(d.price));
 
-      // Add labels on top of bars
-      svg.selectAll(".bar-label")
-        .data(data)
-        .join("text")
-          .attr("class", "bar-label")
-          .attr("x", d => x(d.date) + (width / data.length) / 2)
-          .attr("y", d => y(d.price) - 4)
-          .text(d => d.price);
+      bar.append("text")
+        .attr("class", "bar-label")
+        .attr("x", d => x(d.date) + x.bandwidth() / 2)
+        .attr("y", d => y(d.price) - 4)
+        .attr("text-anchor", "middle")
+        .text(d => d.price);
+
     }).catch(error => {
       console.error("Error loading or processing data:", error);
       svg.append("text")
-         .attr("x", width / 2)
-         .attr("y", height / 2)
-         .attr("text-anchor", "middle")
-         .text("Error loading data. Check console.");
+        .attr("x", width / 2)
+        .attr("y", height / 2)
+        .attr("text-anchor", "middle")
+        .text("Error loading data. Check console.");
     });
+
   </script>
 </body>
 </html>
@@ -120,7 +108,7 @@
 
 **data.csv**
 
-```csv
+```
 date,symbol,price
 2000-01-01,AAPL,100
 2000-02-01,AAPL,120
@@ -136,10 +124,13 @@ date,symbol,price
 2000-12-01,AAPL,200
 ```
 
-This implementation includes the following:
-1. Parsing dates and prices.
-2. Creating time and linear scales.
-3. Adding X and Y axes with labels.
-4. Adding bars and labels for each data point.
-5. Ensuring the chart fits within an 800x600 viewport.
-6. Adding basic styling for the chart, bars, and labels.
+In this implementation, we have:
+1. Loaded the data from `data.csv`.
+2. Parsed the dates and prices.
+3. Created time and linear scales for the X and Y axes.
+4. Added the X and Y axes with appropriate labels.
+5. Added a title to the chart.
+6. Rendered bars based on the data.
+7. Added labels on top of each bar.
+8. Ensured the visualization fits within an 800x600 viewport.
+9. Added basic styling for the chart, bars, and axes.

@@ -23,4 +23,4 @@ console.log("Add test passed");
 process.exit(0); // Exit successfully
 ```
 
-No changes are needed to the `index.mjs` file since it already correctly imports and tests the `add` function. The `add` function in `functions.mjs` has been implemented to correctly add two numbers.
+No changes are needed to `README.md` as it should be kept as is. The `functions.mjs` file now correctly implements the `add` function, and the `index.mjs` file contains the test to verify the implementation.

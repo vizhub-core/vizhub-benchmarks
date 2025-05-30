@@ -10,6 +10,7 @@ export function multiply(a, b) {
 **index.mjs**
 
 ```js
+// Entire updated code for index.mjs
 import { multiply } from "./functions.mjs";
 
 const result = multiply(6, 7);
@@ -21,4 +22,4 @@ console.log("Multiply test passed");
 process.exit(0);
 ```
 
-The `multiply` function in `functions.mjs` has been implemented to correctly multiply two numbers. The unit test in `index.mjs` will now pass as expected.
+The `multiply` function in `functions.mjs` has been implemented to correctly multiply the two input numbers. The unit test in `index.mjs` will now pass as expected.

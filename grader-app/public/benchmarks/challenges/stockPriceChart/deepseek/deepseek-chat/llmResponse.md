@@ -1,4 +1,4 @@
-I'll help modify the `index.html` file to implement the requested AAPL stock price bar chart. Here's the updated version:
+I'll provide the complete updated index.html with the full D3 implementation for the AAPL stock price bar chart. The data.csv file is correct as is and doesn't need changes.
 
 **index.html**
 
@@ -11,20 +11,42 @@ I'll help modify the `index.html` file to implement the requested AAPL stock pri
   <style>
     body { font-family: sans-serif; }
     .bar { fill: steelblue; }
-    .bar-label { fill: black; text-anchor: middle; font-size: 10px; }
-    .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
-    .axis text { font-size: 11px; }
-    .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
-    .chart-container { max-width: 800px; margin: 0 auto; }
+    .bar:hover { fill: orange; }
+    .bar-label { 
+      fill: black; 
+      text-anchor: middle; 
+      font-size: 10px; 
+      font-weight: bold;
+    }
+    .axis path, .axis line { 
+      fill: none; 
+      stroke: #333; 
+      shape-rendering: crispEdges; 
+    }
+    .axis text { 
+      font-size: 11px; 
+      fill: #333;
+    }
+    .chart-title { 
+      font-size: 18px; 
+      font-weight: bold; 
+      text-anchor: middle;
+    }
+    .axis-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+    #chart {
+      width: 800px;
+      height: 600px;
+    }
   </style>
 </head>
 <body>
-  <div class="chart-container">
-    <div id="chart"></div>
-  </div>
-  
+  <div id="chart"></div>
   <script type="module">
-    const margin = {top: 40, right: 30, bottom: 40, left: 60};
+    const margin = {top: 50, right: 30, bottom: 50, left: 60};
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -35,70 +57,73 @@ I'll help modify the `index.html` file to implement the requested AAPL stock pri
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Add chart title
-    svg.append("text")
-       .attr("class", "chart-title")
-       .attr("x", width / 2)
-       .attr("y", 0 - (margin.top / 2))
-       .text("AAPL Stock Price Over Time");
-
     d3.csv("data.csv").then(data => {
-      // Parse dates and prices
+      // Parse the data
       const parseDate = d3.timeParse("%Y-%m-%d");
       data.forEach(d => {
         d.date = parseDate(d.date);
         d.price = +d.price;
       });
 
-      // Set up scales
+      // Create scales
       const xScale = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
-        .range([0, width]);
+        .range([0, width])
+        .nice();
 
       const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.price)])
-        .nice()
-        .range([height, 0]);
+        .domain([0, d3.max(data, d => d.price) * 1.1])
+        .range([height, 0])
+        .nice();
 
-      // Add X axis
+      // Create axes
+      const xAxis = d3.axisBottom(xScale)
+        .tickFormat(d3.timeFormat("%b %Y"))
+        .ticks(d3.timeMonth.every(2));
+
+      const yAxis = d3.axisLeft(yScale)
+        .tickFormat(d => `$${d}`);
+
+      // Add axes to SVG
       svg.append("g")
         .attr("class", "x axis")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale))
-        .append("text")
-          .attr("x", width)
-          .attr("y", 30)
-          .attr("text-anchor", "end")
-          .text("Date");
+        .call(xAxis);
 
-      // Add Y axis
       svg.append("g")
         .attr("class", "y axis")
-        .call(d3.axisLeft(yScale))
-        .append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", -50)
-          .attr("x", 0)
-          .attr("dy", "1em")
-          .attr("text-anchor", "end")
-          .text("Price ($)");
+        .call(yAxis);
 
-      // Calculate bar width
-      const barWidth = Math.max(5, width / data.length - 1);
+      // Add axis labels
+      svg.append("text")
+        .attr("class", "axis-label")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .text("Date");
+
+      svg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 15)
+        .text("Price ($)");
 
       // Create bars
+      const barWidth = width / data.length * 0.7;
+
       svg.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
           .attr("class", "bar")
-          .attr("x", d => xScale(d.date) - barWidth / 2)
+          .attr("x", d => xScale(d.date) - barWidth/2)
           .attr("y", d => yScale(d.price))
           .attr("width", barWidth)
           .attr("height", d => height - yScale(d.price))
-          .attr("fill", "steelblue");
+          .attr("rx", 2)
+          .attr("ry", 2);
 
-      // Add price labels
+      // Add price labels on top of bars
       svg.selectAll(".bar-label")
         .data(data)
         .enter()
@@ -106,7 +131,14 @@ I'll help modify the `index.html` file to implement the requested AAPL stock pri
           .attr("class", "bar-label")
           .attr("x", d => xScale(d.date))
           .attr("y", d => yScale(d.price) - 5)
-          .text(d => d.price);
+          .text(d => `$${d.price}`);
+
+      // Add chart title
+      svg.append("text")
+        .attr("class", "chart-title")
+        .attr("x", width / 2)
+        .attr("y", 0 - (margin.top / 2))
+        .text("AAPL Stock Price Over Time");
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);
@@ -121,15 +153,15 @@ I'll help modify the `index.html` file to implement the requested AAPL stock pri
 </html>
 ```
 
-This implementation:
-1. Creates a responsive chart container
-2. Loads and parses the CSV data
-3. Uses time scales for the X-axis and linear scales for the Y-axis
-4. Renders SVG bars with proper spacing
-5. Adds price labels above each bar
-6. Includes styled X and Y axes with labels
-7. Adds a clear title to the chart
-8. Implements error handling for data loading
-9. Uses appropriate styling for all elements
+This implementation includes all the requested features:
+1. Uses D3.js v7+ to create a bar chart
+2. Loads data from data.csv
+3. Renders SVG bars inside #chart div
+4. Includes properly labeled X (time) and Y (price) axes
+5. Uses time scale for X-axis and linear scale for Y-axis
+6. Adds a title "AAPL Stock Price Over Time"
+7. Displays price values on top of each bar
+8. Fits within an 800x600 viewport
+9. Includes basic styling with CSS
 
-The chart will fit within an 800x600 viewport and includes all requested features. The bars are spaced proportionally based on the number of data points, and the price labels are clearly visible above each bar.
+The bars are responsive to the data width and include hover effects. The X-axis shows formatted dates and the Y-axis shows dollar amounts. The chart is properly spaced with margins and includes axis labels.

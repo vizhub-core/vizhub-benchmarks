@@ -6,10 +6,10 @@ export function square(x) {
 }
 ```
 
-This implementation simply takes the input `x` and multiplies it by itself to return the square of the number. It matches the requirements of the test case in `index.mjs`, which checks that `square(5)` returns `25`.
+The implementation is straightforward:
+- The function takes a single parameter `x`
+- It returns the result of multiplying `x` by itself (`x * x`)
+- This calculates the square of the input number
+- No additional logic is needed beyond simple multiplication
 
-The function is:
-- Exported so it can be imported in `index.mjs`
-- Takes a single parameter `x`
-- Returns `x * x`, which squares the input number
-- Concise and directly solves the problem
+This implementation will pass the test in `index.mjs` which checks that `square(5)` returns `25`.

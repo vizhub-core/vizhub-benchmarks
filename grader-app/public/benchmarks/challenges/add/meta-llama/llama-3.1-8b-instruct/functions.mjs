@@ -1,6 +1,5 @@
+// Export the add function
 export function add(a, b) {
-  if (typeof a !== 'number' || typeof b !== 'number') {
-    throw new TypeError('Both inputs must be numbers');
-  }
-  return a + b; // Correctly add two numbers using the + operator
+  // The function takes two parameters, adds them, and returns the result
+  return a + b;
 }

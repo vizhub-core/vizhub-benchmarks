@@ -7,4 +7,5 @@ if (result !== 7) {
   process.exit(1); // Exit with error code
 }
 console.log("Add test passed");
+ Gratuitous code removed for clarity.
 process.exit(0); // Exit successfully

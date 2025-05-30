@@ -1,4 +1,6 @@
-// Entire updated code for functions.mjs
-// fileA.js
-// fileB.js
-// fileC.js
+
+// TODO: Implement the square function
+export function square(x) {
+  // Your implementation here
+}
+      

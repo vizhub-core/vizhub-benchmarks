@@ -9,7 +9,7 @@
   <style>
     body { font-family: sans-serif; }
     .bar { fill: steelblue; }
-    .bar-label { fill: black; text-anchor: middle; font-size: 10px; }
+    .bar-label { fill: white; text-anchor: middle; font-size: 10px; }
     .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
     .axis text { font-size: 11px; }
     .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
@@ -30,33 +30,29 @@
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
     d3.csv("data.csv", d3.autoType).then(data => {
-      // Parse dates
-      const parseDate = d3.timeParse("%Y-%m-%d");
-      data.forEach(d => {
-          d.date = parseDate(d.date);
-      });
-
+      console.log("Data loaded:", data);
 
       // Scales
-      const xScale = d3.scaleTime()
+      const x = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
         .range([0, width]);
 
-      const yScale = d3.scaleLinear()
+      const y = d3.scaleLinear()
         .domain([0, d3.max(data, d => d.price)])
+        .nice()
         .range([height, 0]);
 
       // Axes
-      const xAxis = d3.axisBottom(xScale);
-      const yAxis = d3.axisLeft(yScale);
+      const xAxis = d3.axisBottom(x);
+      const yAxis = d3.axisLeft(y);
 
       svg.append("g")
-        .attr("transform", `translate(0, ${height})`)
-        .attr("class", "x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .attr("class", "axis")
         .call(xAxis);
 
       svg.append("g")
-        .attr("class", "y-axis")
+        .attr("class", "axis")
         .call(yAxis);
 
       // Bars
@@ -64,28 +60,27 @@
         .data(data)
         .enter().append("rect")
           .attr("class", "bar")
-          .attr("x", d => xScale(d.date))
-          .attr("y", d => yScale(d.price))
-          .attr("width", width / data.length - 2) // Adjust width as needed
-          .attr("height", d => height - yScale(d.price));
+          .attr("x", d => x(d.date))
+          .attr("width", width / data.length - 1)
+          .attr("y", d => y(d.price))
+          .attr("height", d => height - y(d.price));
 
       // Bar labels
-        svg.selectAll(".bar-label")
-            .data(data)
-            .enter().append("text")
-            .attr("class", "bar-label")
-            .attr("x", d => xScale(d.date) + (width / data.length - 2) / 2)
-            .attr("y", d => yScale(d.price) - 5) // Position above the bar
-            .text(d => d.price);
+      svg.selectAll(".bar-label")
+        .data(data)
+        .enter().append("text")
+          .attr("class", "bar-label")
+          .attr("x", d => x(d.date) + (width / data.length - 1) / 2)
+          .attr("y", d => y(d.price) - 5)
+          .text(d => d.price)
+          .style("fill", d => { return (d.price > 175) ? 'white':'black';});
 
       // Title
       svg.append("text")
-        .attr("class", "chart-title")
-        .attr("x", width / 2)
-        .attr("y", 0 - (margin.top / 2))
-        .text("AAPL Stock Price Over Time");
-
-
+         .attr("class", "chart-title")
+         .attr("x", width / 2)
+         .attr("y", 0 - (margin.top / 2))
+         .text("AAPL Stock Price Over Time");
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);
@@ -95,6 +90,7 @@
          .attr("text-anchor", "middle")
          .text("Error loading data. Check console.");
     });
+
   </script>
 </body>
 </html>

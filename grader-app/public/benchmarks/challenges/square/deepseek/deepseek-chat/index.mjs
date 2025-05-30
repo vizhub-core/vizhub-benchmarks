@@ -1,3 +1,4 @@
+
 import { square } from "./functions.mjs";
 
 const input = 5;
@@ -8,3 +9,4 @@ if (result !== 25) {
 }
 console.log("Square test passed");
 process.exit(0);
+      

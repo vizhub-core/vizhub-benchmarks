@@ -1,4 +1,4 @@
-I'll solve this by implementing the `reverseString` function in the `functions.mjs` file:
+I'll solve this by implementing the `reverseString` function in `functions.mjs`.
 
 **functions.mjs**
 
@@ -8,18 +8,11 @@ export function reverseString(str) {
 }
 ```
 
-This implementation does the following:
+The implementation does the following:
 1. `str.split('')` converts the string into an array of characters
-2. `.reverse()` reverses the order of the array
+2. `.reverse()` reverses the order of the characters
 3. `.join('')` converts the array back into a string
 
-The function will:
-- Take a string as input
-- Reverse the characters in the string
-- Return the reversed string
+This concise solution will reverse the input string, matching the expected output in the test case. The function takes a string as input and returns the reversed version of that string.
 
-In this case, when given the input "OpenAI", it will return "IAnepO" as expected by the test in `index.mjs`.
-
-The implementation is concise, readable, and uses built-in JavaScript string and array methods to efficiently reverse the string.
-
-No changes are needed to `index.mjs` as the test script is already correctly set up.
+No changes are needed to `index.mjs`, as the test script is already correctly set up.

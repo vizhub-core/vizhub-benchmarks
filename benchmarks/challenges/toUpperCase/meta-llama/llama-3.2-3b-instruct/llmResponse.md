@@ -1,17 +1,3 @@
-**functions.mjs**
-
-```javascript
-/**
- * Returns the given string in uppercase.
- *
- * @param {string} str - The input string to convert to uppercase.
- * @returns {string} The input string in uppercase.
- */
-export function toUpperCase(str) {
-  return str.toUpperCase();
-}
-```
-
 **index.mjs**
 
 ```javascript
@@ -25,4 +11,12 @@ if (result !== "HELLO") {
 }
 console.log("toUpperCase test passed");
 process.exit(0);
+```
+
+**functions.mjs**
+
+```javascript
+export function toUpperCase(str) {
+  return str.toUpperCase();
+}
 ```

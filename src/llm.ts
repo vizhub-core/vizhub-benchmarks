@@ -1,4 +1,4 @@
-import { LlmFunction } from "../types";
+import type { LlmFunction } from "editcodewithai";
 import { ChatOpenAI, ChatOpenAIFields } from "@langchain/openai";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { LocalFileCache } from "langchain/cache/file_system";

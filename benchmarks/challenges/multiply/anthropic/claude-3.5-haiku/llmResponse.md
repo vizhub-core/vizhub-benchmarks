@@ -1,4 +1,4 @@
-I'll solve this by implementing the multiply function in `functions.mjs`:
+I'll solve this task by implementing the `multiply` function in `functions.mjs`:
 
 **functions.mjs**
 
@@ -22,10 +22,4 @@ console.log("Multiply test passed");
 process.exit(0);
 ```
 
-The solution is straightforward:
-- The `multiply` function takes two parameters `a` and `b`
-- It uses the standard JavaScript multiplication operator `*`
-- It returns the product of the two numbers
-- This will pass the test case which checks that `multiply(6, 7)` returns `42`
-
-The code remains simple and meets the requirements of the task.
+The solution simply implements the `multiply` function to return the product of the two input numbers `a` and `b` using the standard multiplication operator `*`. The function will pass the test case in `index.mjs` by correctly multiplying 6 and 7 to return 42.

@@ -6,20 +6,42 @@
   <style>
     body { font-family: sans-serif; }
     .bar { fill: steelblue; }
-    .bar-label { fill: black; text-anchor: middle; font-size: 10px; }
-    .axis path, .axis line { fill: none; stroke: #000; shape-rendering: crispEdges; }
-    .axis text { font-size: 11px; }
-    .chart-title { font-size: 16px; font-weight: bold; text-anchor: middle; }
-    .chart-container { max-width: 800px; margin: 0 auto; }
+    .bar:hover { fill: orange; }
+    .bar-label { 
+      fill: black; 
+      text-anchor: middle; 
+      font-size: 10px; 
+      font-weight: bold;
+    }
+    .axis path, .axis line { 
+      fill: none; 
+      stroke: #333; 
+      shape-rendering: crispEdges; 
+    }
+    .axis text { 
+      font-size: 11px; 
+      fill: #333;
+    }
+    .chart-title { 
+      font-size: 18px; 
+      font-weight: bold; 
+      text-anchor: middle;
+    }
+    .axis-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-anchor: middle;
+    }
+    #chart {
+      width: 800px;
+      height: 600px;
+    }
   </style>
 </head>
 <body>
-  <div class="chart-container">
-    <div id="chart"></div>
-  </div>
-  
+  <div id="chart"></div>
   <script type="module">
-    const margin = {top: 40, right: 30, bottom: 40, left: 60};
+    const margin = {top: 50, right: 30, bottom: 50, left: 60};
     const width = 800 - margin.left - margin.right;
     const height = 600 - margin.top - margin.bottom;
 
@@ -30,70 +52,73 @@
       .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    // Add chart title
-    svg.append("text")
-       .attr("class", "chart-title")
-       .attr("x", width / 2)
-       .attr("y", 0 - (margin.top / 2))
-       .text("AAPL Stock Price Over Time");
-
     d3.csv("data.csv").then(data => {
-      // Parse dates and prices
+      // Parse the data
       const parseDate = d3.timeParse("%Y-%m-%d");
       data.forEach(d => {
         d.date = parseDate(d.date);
         d.price = +d.price;
       });
 
-      // Set up scales
+      // Create scales
       const xScale = d3.scaleTime()
         .domain(d3.extent(data, d => d.date))
-        .range([0, width]);
+        .range([0, width])
+        .nice();
 
       const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.price)])
-        .nice()
-        .range([height, 0]);
+        .domain([0, d3.max(data, d => d.price) * 1.1])
+        .range([height, 0])
+        .nice();
 
-      // Add X axis
+      // Create axes
+      const xAxis = d3.axisBottom(xScale)
+        .tickFormat(d3.timeFormat("%b %Y"))
+        .ticks(d3.timeMonth.every(2));
+
+      const yAxis = d3.axisLeft(yScale)
+        .tickFormat(d => `$${d}`);
+
+      // Add axes to SVG
       svg.append("g")
         .attr("class", "x axis")
         .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(xScale))
-        .append("text")
-          .attr("x", width)
-          .attr("y", 30)
-          .attr("text-anchor", "end")
-          .text("Date");
+        .call(xAxis);
 
-      // Add Y axis
       svg.append("g")
         .attr("class", "y axis")
-        .call(d3.axisLeft(yScale))
-        .append("text")
-          .attr("transform", "rotate(-90)")
-          .attr("y", -50)
-          .attr("x", 0)
-          .attr("dy", "1em")
-          .attr("text-anchor", "end")
-          .text("Price ($)");
+        .call(yAxis);
 
-      // Calculate bar width
-      const barWidth = Math.max(5, width / data.length - 1);
+      // Add axis labels
+      svg.append("text")
+        .attr("class", "axis-label")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .text("Date");
+
+      svg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 15)
+        .text("Price ($)");
 
       // Create bars
+      const barWidth = width / data.length * 0.7;
+
       svg.selectAll(".bar")
         .data(data)
         .enter()
         .append("rect")
           .attr("class", "bar")
-          .attr("x", d => xScale(d.date) - barWidth / 2)
+          .attr("x", d => xScale(d.date) - barWidth/2)
           .attr("y", d => yScale(d.price))
           .attr("width", barWidth)
           .attr("height", d => height - yScale(d.price))
-          .attr("fill", "steelblue");
+          .attr("rx", 2)
+          .attr("ry", 2);
 
-      // Add price labels
+      // Add price labels on top of bars
       svg.selectAll(".bar-label")
         .data(data)
         .enter()
@@ -101,7 +126,14 @@
           .attr("class", "bar-label")
           .attr("x", d => xScale(d.date))
           .attr("y", d => yScale(d.price) - 5)
-          .text(d => d.price);
+          .text(d => `$${d.price}`);
+
+      // Add chart title
+      svg.append("text")
+        .attr("class", "chart-title")
+        .attr("x", width / 2)
+        .attr("y", 0 - (margin.top / 2))
+        .text("AAPL Stock Price Over Time");
 
     }).catch(error => {
       console.error("Error loading or processing data:", error);

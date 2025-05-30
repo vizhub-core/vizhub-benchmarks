@@ -6,12 +6,14 @@ export function add(a, b) {
 }
 ```
 
-This implementation simply adds the two input numbers `a` and `b` and returns the result. It will pass the test in `index.mjs` which checks that `add(3, 4)` returns `7`. The function is straightforward:
-- It takes two parameters `a` and `b`
-- Uses the `+` operator to add them together
-- Returns the sum
+The implementation is straightforward:
+- The function takes two parameters `a` and `b`
+- It returns the sum of these two parameters using the `+` operator
+- This will pass the test in `index.mjs` which checks if `add(3, 4)` returns `7`
 
-The implementation matches the requirements by:
-1. Correctly adding two numbers
-2. Being exported so it can be imported in `index.mjs`
-3. Passing the provided test case
+The function works with:
+- Integers
+- Floating point numbers 
+- Will concatenate strings if non-numeric values are passed
+
+This simple implementation meets the requirements of the test case and provides a basic addition function.

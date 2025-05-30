@@ -24,7 +24,7 @@ process.exit(0);
 
 **README.md**
 
-```
+```md
 ```
 
-The `functions.mjs` file has been updated to implement the `square` function correctly. The `index.mjs` file remains unchanged as it already contains the test for the `square` function.
+(If there was a README.md file, it remains unchanged as per the instructions.)

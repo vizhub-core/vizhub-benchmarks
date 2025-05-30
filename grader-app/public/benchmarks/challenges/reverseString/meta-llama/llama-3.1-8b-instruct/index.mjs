@@ -1,7 +1,8 @@
+
 import { reverseString } from "./functions.mjs";
 
 const input = "OpenAI";
-const expected = "IaenoP"; // Corrected expected output
+const expected = "IAnepO"; // Corrected expected output
 
 const result = reverseString(input);
 if (result !== expected) {
@@ -10,3 +11,4 @@ if (result !== expected) {
 }
 console.log("reverseString test passed");
 process.exit(0);
+      
