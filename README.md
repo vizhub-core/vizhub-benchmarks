@@ -67,3 +67,85 @@ npm run grade -- --challenge stockPriceChart
 - 3: Clean design
 - 4: Well-designed with good UX
 - 5: Exceptional design
+
+## Collaborative Grading System
+
+### Current State vs. Ideal Structure
+
+**Current Issues:**
+- Grader saves results to `grader-app/public/benchmarks/results/results.csv` (isolated)
+- No git integration for collaborative contributions
+- Manual file copying between main repo and grader app
+- Results aren't versioned or shared between graders
+
+**Ideal Collaborative Structure:**
+
+```
+benchmarks/
+├── results/
+│   ├── results.csv              # Main results file (git-tracked)
+│   ├── grades/                  # Individual grader contributions
+│   │   ├── alice-2024-01-15.csv # Timestamped grader files
+│   │   ├── bob-2024-01-16.csv
+│   │   └── claire-2024-01-17.csv
+│   └── consensus/               # Aggregated consensus grades
+│       └── consensus.csv        # Merged/averaged results
+├── challenges/                  # Challenge implementations (existing)
+└── visualizations/             # Generated outputs (existing)
+```
+
+### Planned Collaborative Workflow
+
+1. **Individual Grading**:
+   - Each grader works on a local copy
+   - Grader saves to timestamped file: `grades/{grader-name}-{date}.csv`
+   - Grader commits their individual grades to git
+   - Creates PR with their grading session
+
+2. **Grade Aggregation**:
+   - Automated script merges individual grades
+   - Handles conflicts (multiple grades for same result)
+   - Generates consensus scores (median/average)
+   - Updates main `results.csv` with consensus
+
+3. **Git Integration**:
+   - Each grading session = git commit
+   - Grader identity tracked in commit metadata
+   - Full audit trail of grading decisions
+   - Easy diffing between grading sessions
+
+4. **Quality Assurance**:
+   - Flag results with high grade variance
+   - Track inter-grader reliability
+   - Identify results needing re-evaluation
+   - Generate grading statistics and reports
+
+### Technical Implementation Plan
+
+**Phase 1: File Structure**
+- Create `benchmarks/results/grades/` directory
+- Modify grader to save individual grade files
+- Update file paths and data flow
+
+**Phase 2: Git Integration**
+- Auto-commit individual grading sessions
+- Generate meaningful commit messages
+- Add grader metadata to commits
+
+**Phase 3: Aggregation System**
+- Script to merge individual grades
+- Consensus calculation algorithms
+- Conflict resolution strategies
+
+**Phase 4: Quality Tools**
+- Inter-grader agreement metrics
+- Grade variance analysis
+- Automated quality reports
+
+### Benefits
+
+- **Distributed Grading**: Multiple people can contribute grades independently
+- **Version Control**: Full history of grading decisions
+- **Quality Control**: Statistical analysis of grader agreement
+- **Transparency**: Open process with audit trail
+- **Scalability**: Easy to add new graders and challenges
