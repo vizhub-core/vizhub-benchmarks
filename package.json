@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "description": "AI code editing benchmarks for interactive visuals",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "vitest run",
     "build": "tsc",
     "typecheck": "tsc --noEmit",
-    "benchmark": "ts-node src/cli.ts run; cp -r ./benchmarks grader-app/public",
+    "benchmark": "tsx src/cli.ts run; cp -r ./benchmarks grader-app/public",
     "grade": "cd grader-app && npm run dev",
     "benchmark:help": "ts-node src/benchmarks/cli.ts help",
     "upgrade": "ncu -u",
@@ -33,6 +34,7 @@
     "@types/d3-dsv": "^3.0.7",
     "npm": "^11.4.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.4",
     "vite-node": "^3.1.4"
   },
   "dependencies": {
@@ -43,5 +45,8 @@
     "editcodewithai": "^1.1.0",
     "langchain": "^0.3.27",
     "puppeteer": "^24.9.0"
+  },
+  "ts-node": {
+    "esm": true
   }
 }
