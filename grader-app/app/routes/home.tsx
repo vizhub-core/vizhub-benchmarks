@@ -4,19 +4,56 @@ import type { Route } from "./+types/home";
 import { Form } from "react-router";
 import { GradeResult } from "../components/GradeResult";
 import type { Result } from "../types/result";
-import { writeFile } from "fs/promises";
+import { writeFile, readFile } from "fs/promises";
+import { exec } from "child_process";
+import { promisify } from "util";
 import path from "path";
+
+const execAsync = promisify(exec);
+
+async function getGraderName() {
+  try {
+    const { stdout } = await execAsync('git config user.name');
+    return stdout.trim().replace(/\s+/g, '-').toLowerCase();
+  } catch (error) {
+    console.warn('Could not get git user name, using anonymous');
+    return 'anonymous';
+  }
+}
+
+export async function loader() {
+  const graderName = await getGraderName();
+  
+  // Read results from main repo
+  try {
+    const resultsPath = path.join(
+      process.cwd(),
+      "..",
+      "benchmarks", 
+      "results",
+      "results.csv"
+    );
+    const csvContent = await readFile(resultsPath, 'utf-8');
+    return { graderName, csvContent };
+  } catch (error) {
+    console.error('Failed to read results:', error);
+    return { graderName, csvContent: '' };
+  }
+}
 
 export async function action({ request }) {
   const formData = await request.formData();
   const csvContent = formData.get("results") as string;
+  const graderName = await getGraderName();
 
+  // Save to main repo grades directory
   const filePath = path.join(
     process.cwd(),
-    "public",
+    "..", // Go up from grader-app to main repo
     "benchmarks",
     "results",
-    "results.csv"
+    "grades",
+    `${graderName}.csv`
   );
   await writeFile(filePath, csvContent);
 
@@ -33,21 +70,20 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export default function Home({ loaderData }: Route.ComponentProps) {
   const [results, setResults] = useState<Result[]>([]);
-  const [reviewer, setReviewer] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [reviewer, setReviewer] = useState(loaderData?.graderName || "anonymous");
 
   useEffect(() => {
-    fetchResults();
-  }, []);
+    if (loaderData?.csvContent) {
+      parseResults(loaderData.csvContent);
+    }
+  }, [loaderData]);
 
-  const fetchResults = async () => {
+  const parseResults = (csvContent: string) => {
     try {
-      const response = await fetch(
-        "/benchmarks/results/results.csv"
-      );
-      const text = await response.text();
-      const data = csvParse(text);
+      const data = csvParse(csvContent);
       console.log(data);
       const parsedResults = data
         .map((row) => ({
@@ -70,7 +106,7 @@ export default function Home() {
         );
       setResults(parsedResults);
     } catch (error) {
-      console.error("Failed to load results:", error);
+      console.error("Failed to parse results:", error);
     }
   };
 
@@ -121,19 +157,8 @@ export default function Home() {
         ].join(",") + "\n";
     });
 
-    try {
-      const response = await fetch(
-        "benchmarks/results.csv",
-        {
-          method: "PUT",
-          body: csv,
-        }
-      );
-      if (!response.ok) throw new Error("Failed to save");
-    } catch (e) {
-      console.error("Failed to save results:", e);
-      console.error("Failed to save results to server");
-    }
+    // Remove the broken fetch-based save - we'll use the form submission instead
+    console.log('Grades will be saved when you click Save Results button');
   };
 
   return (
@@ -151,28 +176,42 @@ export default function Home() {
         />
       </div>
 
-      <div
-        id="results"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4"
-      >
-        {results.map((result, index) => (
-          <GradeResult
-            key={`${result.challenge}-${result.model}`}
-            result={result}
-            index={index}
-            onGradeChange={handleGradeChange}
-            onNotesChange={handleNotesChange}
-          />
-        ))}
-      </div>
+      {results.length > 0 && (
+        <div className="fullscreen-grader">
+          <div className="position-indicator">
+            {currentIndex + 1}/{results.length}
+          </div>
+          
+          <div className="split-layout">
+            <div className="visualization-panel">
+              <img 
+                src={`/benchmarks/visualizations/${results[currentIndex].challenge}/${results[currentIndex].model}/output.png`} 
+                alt="Visualization" 
+                className="viz-image"
+              />
+            </div>
+            
+            <div className="code-panel">
+              <div className="code-viewer">
+                <div className="challenge-info">
+                  {results[currentIndex].challenge} - {results[currentIndex].model}
+                </div>
+                <div className="code-content">
+                  [Code viewer will go here]
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="grading-controls">
+            <div className="grade-section">
+              <span>Technical: {results[currentIndex].technical || 'ungraded'}</span>
+              <span>Aesthetics: {results[currentIndex].aesthetics || 'ungraded'}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <div className="keyboard-tips">
-        1-5: Technical Grade
-        <br />
-        Shift + 1-5: Aesthetics
-        <br />
-        Tab: Next Result
-      </div>
 
       <Form method="post">
         <input
