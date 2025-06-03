@@ -188,6 +188,18 @@ If you use this dataset in your research, please cite:
 }
 ```
 
+## Contributors
+
+This dataset was created through collaborative effort by:
+
+**Project Lead & Architecture**:
+- **Curran Kelleher** (curran@datavis.tech) - VizHub platform creator, initial benchmark framework design
+
+**Dataset Development & Research Infrastructure**:
+- **EJ Fox** (ej@ejfox.com) - RLHF export system, academic methodology, grading interface
+
+All contributors are recognized in the git commit history and retain attribution rights for their specific contributions to the methodology, infrastructure, and evaluation framework.
+
 ## Contact Information
 
 **Maintainers**: 
