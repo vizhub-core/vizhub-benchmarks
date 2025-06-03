@@ -1,5 +1,25 @@
 # vizhub-benchmarks
-AI code editing benchmarks for interactive visuals
+AI code editing benchmarks for interactive visuals + **training dataset generation**
+
+## Overview
+
+This project serves dual strategic purposes:
+
+1. **Model Evaluation**: Systematic assessment of AI coding capabilities across models (GPT, Claude, Llama, DeepSeek, etc.)
+2. **Training Data Generation**: High-quality human-rated datasets for LLM fine-tuning and research
+
+## Quick Start
+
+```bash
+# Run benchmarks to generate code samples
+npm run benchmark
+
+# Launch collaborative grading interface  
+npm run grade
+
+# Export training dataset in RLHF format
+npm run export:huggingface
+```
 
 ## Benchmark System
 
@@ -149,3 +169,50 @@ benchmarks/
 - **Quality Control**: Statistical analysis of grader agreement
 - **Transparency**: Open process with audit trail
 - **Scalability**: Easy to add new graders and challenges
+
+## 🤖 Training Dataset Generation
+
+### HuggingFace RLHF Export
+
+Transform human evaluations into industry-standard training datasets:
+
+```bash
+# Export to standard RLHF format
+npm run export:huggingface
+
+# Custom export options
+npm run export:huggingface -- --output my-dataset.jsonl --min-votes 2 --verbose
+```
+
+**Output**: `{prompt, chosen, rejected}` triplets compatible with:
+- OpenAI fine-tuning API
+- HuggingFace TRL (Transformer Reinforcement Learning)
+- Anthropic Constitutional AI
+- Academic research pipelines
+
+### Dataset Statistics
+
+Current export generates:
+- **9 training examples** from existing evaluations
+- **10 models** across major AI providers
+- **Consensus scoring** with confidence intervals
+- **Full metadata** for reproducible research
+
+### Research Applications
+
+**Model Training**:
+- Fine-tune coding models with human preference data
+- Train reward models for automated code assessment
+- Enable RLHF (Reinforcement Learning from Human Feedback)
+
+**Academic Research**:
+- Benchmark datasets with standardized methodology
+- Reproducible evaluation frameworks
+- Multi-dimensional quality assessment
+
+**Industry Applications**:
+- Model selection based on human-validated performance
+- Code quality assessment tools
+- Training data for specialized domains
+
+See [`scripts/README.md`](scripts/README.md) for detailed technical documentation.

@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "benchmark": "tsx src/cli.ts run; cp -r ./benchmarks grader-app/public",
     "grade": "cd grader-app && npm run dev",
+    "export:huggingface": "node scripts/export-huggingface.js",
     "benchmark:help": "ts-node src/benchmarks/cli.ts help",
     "upgrade": "ncu -u",
     "prettier": "prettier {*.*,**/*.*} --write"
