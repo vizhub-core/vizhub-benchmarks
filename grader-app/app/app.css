@@ -7,7 +7,7 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white dark:bg-gray-950 m-0 p-0;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
@@ -72,4 +72,205 @@ body {
 
 .save-button {
   @apply fixed bottom-5 left-5 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors;
+}
+
+/* Fullscreen grader styles */
+.fullscreen-grader {
+  @apply h-screen w-screen overflow-hidden relative;
+}
+
+/* Ensure no horizontal scrolling on the page */
+body, html {
+  @apply overflow-x-hidden;
+}
+
+.position-indicator {
+  @apply fixed top-4 right-4 bg-black/80 text-white px-3 py-1 rounded-md text-sm font-mono z-10 flex items-center gap-2;
+}
+
+.graded-indicator {
+  @apply text-green-400 font-bold;
+}
+
+/* Expandable challenge and model labels */
+.challenge-labels {
+  @apply fixed top-4 left-1/2 transform -translate-x-1/2 bg-black/90 text-white rounded-lg shadow-lg z-10 max-w-2xl;
+}
+
+.challenge-header {
+  @apply flex items-center gap-6 px-4 py-2 cursor-pointer hover:bg-black/80 rounded-lg transition-colors;
+}
+
+.challenge-name, .model-name {
+  @apply flex items-center gap-2;
+}
+
+.challenge-labels .label {
+  @apply text-xs text-gray-400 font-semibold;
+}
+
+.challenge-labels .value {
+  @apply text-sm font-mono text-white;
+}
+
+.expand-indicator {
+  @apply text-gray-400 text-xs ml-auto;
+}
+
+.challenge-details {
+  @apply border-t border-gray-600 px-4 py-3 max-h-64 overflow-y-auto;
+}
+
+.challenge-prompt h4 {
+  @apply text-sm font-semibold text-gray-300 mb-2;
+}
+
+.prompt-text {
+  @apply text-xs text-gray-200 font-mono leading-relaxed whitespace-pre-wrap bg-gray-800/50 p-3 rounded border max-h-48 overflow-y-auto;
+}
+
+.split-layout {
+  @apply flex h-full;
+}
+
+.visualization-panel {
+  @apply flex-1 flex items-start justify-start bg-gray-50 p-4;
+}
+
+.viz-image {
+  @apply w-full h-auto object-contain shadow-lg rounded-lg;
+}
+
+.code-panel {
+  @apply flex-1 bg-gray-900 text-white overflow-hidden;
+}
+
+.challenge-info {
+  @apply bg-gray-800 px-4 py-2 text-sm font-mono border-b border-gray-700;
+}
+
+.code-content {
+  @apply p-4 font-mono text-sm overflow-auto h-full;
+}
+
+/* Compact grading panel - bottom left to avoid all overlaps */
+.grading-panel {
+  @apply fixed bottom-4 left-4 bg-black/90 text-white p-3 rounded-lg shadow-lg max-w-xs z-20;
+}
+
+.grading-instructions h3 {
+  @apply text-sm font-semibold mb-2;
+}
+
+.grade-categories {
+  @apply space-y-2 mb-3;
+}
+
+.grade-category {
+  @apply flex items-center gap-3;
+}
+
+.grade-category label {
+  @apply font-medium text-xs w-16 flex-shrink-0;
+}
+
+.grade-buttons {
+  @apply flex gap-1;
+}
+
+.grade-btn {
+  @apply w-6 h-6 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold rounded border border-gray-600 transition-all cursor-pointer;
+}
+
+.grade-btn.selected {
+  @apply bg-blue-600 border-blue-400 text-white;
+}
+
+.current-grade {
+  @apply text-xs text-gray-300 font-mono w-12 text-center;
+}
+
+.action-buttons {
+  @apply flex justify-center mb-3;
+}
+
+.auto-fail-btn {
+  @apply bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs font-semibold transition-colors;
+}
+
+.navigation-controls {
+  @apply flex items-center justify-between gap-2 mb-2 border-t border-gray-600 pt-2;
+}
+
+.nav-btn {
+  @apply bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 text-white px-2 py-1 rounded text-xs font-semibold transition-colors;
+}
+
+.progress-info {
+  @apply flex flex-col items-center gap-1;
+}
+
+.position {
+  @apply font-mono text-xs;
+}
+
+.progress-bar {
+  @apply w-20 h-1 bg-gray-700 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-blue-500 transition-all duration-300;
+}
+
+.hotkey-reference {
+  @apply text-xs text-gray-400 text-center border-t border-gray-600 pt-2 font-mono leading-tight;
+}
+
+.save-section {
+  @apply border-t border-gray-600 pt-2 mt-2;
+}
+
+.save-results-btn {
+  @apply w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm font-semibold transition-colors;
+}
+
+/* CodeViewer styles - vzcode compatible */
+.code-viewer {
+  @apply h-full flex flex-col bg-gray-900;
+}
+
+.file-tabs {
+  @apply flex bg-gray-800 border-b border-gray-700 overflow-x-auto;
+}
+
+.file-tab {
+  @apply px-4 py-2 text-sm font-mono text-gray-300 hover:text-white hover:bg-gray-700 border-r border-gray-700 whitespace-nowrap transition-colors;
+}
+
+.file-tab.active {
+  @apply text-white bg-gray-700;
+}
+
+.code-editor-container {
+  @apply flex-1 overflow-hidden;
+}
+
+.code-editor {
+  @apply h-full;
+}
+
+.code-viewer-loading,
+.code-viewer-error,
+.code-viewer-empty {
+  @apply h-full flex items-center justify-center text-gray-400;
+}
+
+.loading-text,
+.error-text,
+.empty-text {
+  @apply font-mono text-sm;
+}
+
+.error-text {
+  @apply text-red-400;
 }

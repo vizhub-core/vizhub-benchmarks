@@ -9,9 +9,15 @@
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-html": "^6.4.9",
+    "@codemirror/lang-javascript": "^6.2.4",
     "@react-router/node": "^7.5.0",
     "@react-router/serve": "^7.5.0",
     "@types/d3-dsv": "^3.0.7",
+    "@uiw/codemirror-theme-vscode": "^4.23.12",
+    "@uiw/codemirror-themes": "^4.23.12",
+    "@uiw/react-codemirror": "^4.23.12",
     "d3-dsv": "^3.0.1",
     "isbot": "^5.1.17",
     "react": "^19.0.0",
