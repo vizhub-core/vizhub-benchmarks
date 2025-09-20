@@ -1,0 +1,1 @@
+Implement the 'multiply' function in functions.mjs to correctly multiply two numbers and pass the unit test in index.mjs.

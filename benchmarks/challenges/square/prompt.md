@@ -1,0 +1,1 @@
+Implement the 'square' function in functions.mjs that returns x*x.

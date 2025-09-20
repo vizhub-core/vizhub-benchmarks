@@ -1,0 +1,1 @@
+Implement the 'add' function in functions.mjs to correctly add two numbers (a+b) and pass the test in index.mjs.
