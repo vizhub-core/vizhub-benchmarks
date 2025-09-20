@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { runBenchmark, startGraderUI } from "./core";
 import { ensureCacheDir } from "./fileUtils";
 import { Challenge } from "./types"; // Import Challenge type
-import { challenges } from "./challenges";
+import { loadChallengesFromFiles } from "./challengeLoader";
 import { models as defaultModels } from "./models";
 
 // Load environment variables
@@ -51,10 +51,13 @@ const runBenchmarkCommand = async () => {
       throw new Error("Please set OPENROUTER_API_KEY in your .env file");
     }
 
+    // Load challenges from files
+    const allChallenges = loadChallengesFromFiles();
+
     // Filter challenges if specified - Added type for 'c'
     const challengesToRun = challenge
-      ? challenges.filter((c: Challenge) => c.name === challenge)
-      : challenges;
+      ? allChallenges.filter((c: Challenge) => c.name === challenge)
+      : allChallenges;
 
     if (challenge && challengesToRun.length === 0) {
       throw new Error(`Challenge "${challenge}" not found`);

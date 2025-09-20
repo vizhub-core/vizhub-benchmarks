@@ -1,0 +1,1 @@
+Implement the toUpperCase function in functions.mjs that returns the given string in uppercase.
